@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Change Managed Brand System
+   ========================================================================== */
+
+@theme {
+  /* Foundation Colors */
+  --color-charcoal: #1A1A1A;
+  --color-cream: #FAFAF8;
+  --color-linen: #F5F1E8;
+  --color-taupe: #8B7355;
+  --color-stone: #C9C5BD;
+  --color-graphite: #666666;
+
+  /* Accent Colors - "punctuation, not paragraphs" */
+  --color-deep-sage: #2D5F4F;
+  --color-muted-sage: #5A7C6F;
+
+  /* Font Family */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--color-charcoal);
+  background-color: var(--color-cream);
+}
+
+/* Delta Logo Hover Animation */
+.delta-symbol {
+  transition: transform 0.3s ease;
+}
+
+.logo-lockup:hover .delta-symbol {
+  transform: rotate(45deg);
+}
+
+/* Nav Link Hover */
+.nav-link {
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--color-deep-sage);
+}
+
+/* Card Hover States */
+.card-hover {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  border-color: var(--color-deep-sage);
+  box-shadow: 0 4px 12px rgba(45, 95, 79, 0.1);
+}

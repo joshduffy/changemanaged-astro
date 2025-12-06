@@ -1,0 +1,36 @@
+---
+interface Props {
+  variant?: 'light' | 'dark';
+  class?: string;
+}
+
+const { variant = 'light', class: className = '' } = Astro.props;
+
+// Charcoal on light backgrounds, Cream on dark backgrounds
+const textColor = variant === 'light' ? 'text-charcoal' : 'text-cream';
+const strokeColor = variant === 'light' ? '#1A1A1A' : '#FAFAF8';
+---
+
+<a href="/" class:list={['logo-lockup flex items-center gap-2 group', className]}>
+  <!-- Delta Symbol SVG -->
+  <svg
+    class="delta-symbol w-8 h-8"
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M16 4L28 28H4L16 4Z"
+      stroke={strokeColor}
+      stroke-width="1.5"
+      stroke-linejoin="miter"
+      stroke-linecap="square"
+      fill="none"
+    />
+  </svg>
+
+  <!-- Text Lockup -->
+  <span class={`text-xl tracking-tight ${textColor}`}>
+    <span class="font-light">CHANGE</span><span class="font-bold">MANAGED</span>
+  </span>
+</a>
