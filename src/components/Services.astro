@@ -1,0 +1,101 @@
+---
+const services = [
+  {
+    icon: 'users',
+    title: 'Enterprise Change Management',
+    description: 'Deploy PROSCI-certified change methodologies for large-scale transformations.',
+    capabilities: [
+      'PROSCI/ADKAR methodology implementation and certification',
+      'Change impact assessment, readiness planning, and risk mitigation',
+      'Executive sponsorship coaching and change champion network development',
+      'Strategic communications planning and multi-channel stakeholder engagement',
+    ],
+  },
+  {
+    icon: 'briefcase',
+    title: 'Technology & Process Transformation',
+    description: 'Guide complex system implementations and process improvements from vendor selection through post-deployment optimization.',
+    capabilities: [
+      'Technology selection, business case development, and implementation strategy',
+      'End-to-end business process optimization and reengineering',
+      'Vendor selection, contract negotiation, and program management',
+      'User adoption strategies and quantifiable benefits realization tracking',
+    ],
+  },
+  {
+    icon: 'git-branch',
+    title: 'Organizational Design',
+    description: 'Design future-state organizations that balance efficiency, agility, and cultural alignment.',
+    capabilities: [
+      'Multi-level organizational assessment, design, and transformation',
+      'Talent assessment frameworks, selection processes, and placement strategies',
+      'Leadership transition planning, succession management, and capability building',
+      'RACI development, governance frameworks, and decision rights clarification',
+    ],
+  },
+  {
+    icon: 'git-merge',
+    title: 'M&A Integration & Carve-Outs',
+    description: 'Navigate complex mergers, acquisitions, and divestitures with battle-tested frameworks from $3B+ deals.',
+    capabilities: [
+      'Integration Management Office (IMO) design, setup, and leadership',
+      'Day 1 readiness planning, operating model design, and governance establishment',
+      'Synergy identification, validation, tracking, and realization (cost & revenue)',
+      'Carve-out separation planning, TSA management, and standalone execution',
+    ],
+  },
+];
+---
+
+<section id="services" class="py-20 px-6 bg-linen">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-light text-charcoal mb-4">Core Capabilities</h2>
+    <p class="text-graphite mb-12 max-w-2xl">
+      Deep expertise where strategy meets execution. Real experience from successful enterprise transformations.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      {services.map((service) => (
+        <div class="card-hover bg-white rounded-lg p-8 border border-gray-100">
+          <!-- Icon -->
+          <div class="w-8 h-8 text-charcoal mb-4">
+            {service.icon === 'users' && (
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            )}
+            {service.icon === 'briefcase' && (
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            )}
+            {service.icon === 'git-branch' && (
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 3v12M6 21a3 3 0 100-6 3 3 0 000 6zM18 9a3 3 0 100-6 3 3 0 000 6zM6 15a9 9 0 009-9" />
+              </svg>
+            )}
+            {service.icon === 'git-merge' && (
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 3v12M6 21a3 3 0 100-6 3 3 0 000 6zM18 21a3 3 0 100-6 3 3 0 000 6zM6 15a9 9 0 009 0" />
+              </svg>
+            )}
+          </div>
+
+          <h3 class="text-xl font-medium text-charcoal mb-3">{service.title}</h3>
+          <p class="text-graphite mb-4">{service.description}</p>
+
+          <ul class="space-y-2">
+            {service.capabilities.map((capability) => (
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-deep-sage mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-sm text-graphite">{capability}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

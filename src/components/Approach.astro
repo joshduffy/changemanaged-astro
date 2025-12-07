@@ -1,0 +1,48 @@
+---
+const steps = [
+  {
+    number: '1.',
+    title: 'Assess & Strategize',
+    description: 'Comprehensive evaluation of current state, stakeholder alignment, and strategic roadmap development.',
+  },
+  {
+    number: '2.',
+    title: 'Mobilize & Execute',
+    description: 'Structured deployment with clear governance, risk management, and continuous stakeholder engagement.',
+  },
+  {
+    number: '3.',
+    title: 'Sustain & Optimize',
+    description: 'Embedding change through capability building, continuous improvement, and benefits realization.',
+  },
+];
+---
+
+<section id="approach" class="py-20 px-6 bg-cream">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-light text-charcoal mb-4">Our Approach</h2>
+    <p class="text-graphite mb-12 max-w-2xl">
+      We combine strategic vision with operational excellence, ensuring transformations deliver measurable business value.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-8 mb-12">
+      {steps.map((step) => (
+        <div class="card-hover bg-white rounded-lg p-8 border border-gray-100 group">
+          <span class="text-4xl font-light text-charcoal group-hover:text-deep-sage transition-colors">{step.number}</span>
+          <h3 class="text-xl font-medium text-charcoal mt-2 mb-3">{step.title}</h3>
+          <p class="text-graphite">{step.description}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Quote Block -->
+    <div class="bg-linen rounded-lg p-8 border-l-[3px] border-deep-sage">
+      <blockquote class="text-xl font-medium text-charcoal mb-4">
+        "Transformation is not a destination, it's a capability."
+      </blockquote>
+      <p class="text-graphite">
+        We focus on building internal capabilities that sustain change long after the consultants leave. Our success is measured by your organization's ability to continuously adapt and improve.
+      </p>
+    </div>
+  </div>
+</section>

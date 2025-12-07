@@ -1,0 +1,70 @@
+---
+const posts = [
+  {
+    slug: 'first-100-days',
+    title: 'The First 100 Days: A Practical Guide to Merger Integration',
+    date: 'October 2024',
+    readTime: '8 min read',
+    excerpt: "The first 100 days don't have to be dramatic. They have to be deliberate. Here's how we run Day 0 through Day 100 so customers stay, employees exhale, and the thesis starts showing up in numbers.",
+  },
+  {
+    slug: 'why-70-percent-fail',
+    title: 'Why 70% of Transformations Fail (And How to Be in the 30%)',
+    date: 'September 2024',
+    readTime: '6 min read',
+    excerpt: "Whether the exact percentage is 70 or 57 is less interesting than the pattern: programs fail for the same human reasons. Here's how we run them differently so the value actually shows up.",
+  },
+];
+---
+
+<section id="insights" class="py-20 px-6 bg-cream">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-light text-charcoal mb-4">Insights</h2>
+    <p class="text-graphite mb-12">
+      Practical perspectives from the field of transformation.
+    </p>
+
+    <div class="space-y-6">
+      {posts.map((post) => (
+        <a href={`/insights/${post.slug}`} class="block card-hover bg-white rounded-lg p-8 border border-gray-100 group">
+          <article>
+            <h3 class="text-xl font-medium text-charcoal mb-3 group-hover:text-deep-sage transition-colors">{post.title}</h3>
+
+            <div class="flex items-center gap-4 text-sm text-taupe mb-4">
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {post.date}
+              </span>
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {post.readTime}
+              </span>
+            </div>
+
+            <p class="text-graphite mb-4">{post.excerpt}</p>
+
+            <span class="inline-flex items-center gap-2 text-charcoal group-hover:text-deep-sage transition-colors">
+              Read More
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </span>
+          </article>
+        </a>
+      ))}
+    </div>
+
+    <div class="mt-8 text-center">
+      <a href="/insights" class="inline-flex items-center gap-2 text-charcoal hover:text-deep-sage transition-colors">
+        View All Insights
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

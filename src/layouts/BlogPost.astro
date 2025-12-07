@@ -1,0 +1,85 @@
+---
+import Layout from './Layout.astro';
+import Nav from '../components/Nav.astro';
+
+interface Props {
+  title: string;
+  date: string;
+  readTime: string;
+}
+
+const { title, date, readTime } = Astro.props;
+
+// Split title at colon for better formatting
+const titleParts = title.includes(':') ? title.split(':') : [title];
+const mainTitle = titleParts[0].trim();
+const subtitle = titleParts.length > 1 ? titleParts.slice(1).join(':').trim() : null;
+---
+
+<Layout title={`${title} | Change Managed`}>
+  <Nav />
+
+  <article class="pt-32 pb-20 px-6 bg-cream">
+    <div class="max-w-3xl mx-auto">
+      <!-- Header -->
+      <header class="mb-12">
+        <a href="/insights" class="inline-flex items-center gap-2 text-taupe hover:text-deep-sage transition-colors mb-6">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Insights
+        </a>
+
+        <h1 class="text-charcoal mb-6">
+          <span class="block text-3xl md:text-4xl font-light leading-snug">{mainTitle}{subtitle ? ':' : ''}</span>
+          {subtitle && <span class="block text-2xl md:text-3xl font-light text-graphite mt-2">{subtitle}</span>}
+        </h1>
+
+        <div class="flex items-center gap-4 text-sm text-taupe">
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {date}
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {readTime}
+          </span>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="prose prose-lg max-w-none
+        prose-headings:font-light prose-headings:text-charcoal
+        prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4
+        prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+        prose-p:text-graphite prose-p:leading-relaxed
+        prose-a:text-charcoal prose-a:underline hover:prose-a:text-deep-sage
+        prose-strong:text-charcoal prose-strong:font-medium
+        prose-ul:text-graphite prose-ol:text-graphite
+        prose-li:my-1
+        prose-blockquote:border-l-[3px] prose-blockquote:border-deep-sage prose-blockquote:bg-linen prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-charcoal
+        prose-hr:border-stone prose-hr:my-12
+      ">
+        <slot />
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="mt-16 pt-8 border-t border-stone">
+        <div class="bg-linen rounded-lg p-8">
+          <h3 class="text-xl font-medium text-charcoal mb-3">Ready to discuss your transformation?</h3>
+          <p class="text-graphite mb-6">We help organizations navigate complex change with practical, proven approaches.</p>
+          <a href="/#contact" class="inline-flex items-center gap-2 bg-charcoal text-cream px-6 py-3 rounded hover:bg-deep-sage transition-colors">
+            Start a Conversation
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</Layout>

@@ -1,65 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Logo from '../components/Logo.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Services from '../components/Services.astro';
+import Approach from '../components/Approach.astro';
+import Work from '../components/Work.astro';
+import Insights from '../components/Insights.astro';
+import Contact from '../components/Contact.astro';
 ---
 
 <Layout>
+  <Nav />
+
   <main class="min-h-screen bg-cream">
-    <!-- Demo header showing brand elements -->
-    <div class="py-8 px-6 border-b border-stone">
-      <div class="max-w-6xl mx-auto">
-        <Logo />
-      </div>
-    </div>
+    <Hero />
 
-    <!-- Brand color demo -->
-    <div class="py-20 px-6">
-      <div class="max-w-4xl mx-auto">
-        <h1 class="text-6xl font-light text-charcoal mb-4">
-          Complex transformation.
-        </h1>
-        <h2 class="text-6xl font-light text-charcoal mb-12">
-          Simple execution.
-        </h2>
+    <Services />
 
-        <p class="text-xl text-graphite mb-8">
-          Stage 1b complete. Hover over the logo to see the delta tilt animation.
-        </p>
+    <Approach />
 
-        <!-- Color swatches -->
-        <div class="grid grid-cols-4 gap-4 mb-12">
-          <div class="text-center">
-            <div class="w-full h-16 bg-charcoal rounded mb-2"></div>
-            <span class="text-sm text-taupe">Charcoal</span>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-16 bg-linen rounded border border-stone mb-2"></div>
-            <span class="text-sm text-taupe">Linen</span>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-16 bg-deep-sage rounded mb-2"></div>
-            <span class="text-sm text-taupe">Deep Sage</span>
-          </div>
-          <div class="text-center">
-            <div class="w-full h-16 bg-muted-sage rounded mb-2"></div>
-            <span class="text-sm text-taupe">Muted Sage</span>
-          </div>
-        </div>
+    <Work />
 
-        <!-- Nav link hover demo -->
-        <div class="flex gap-8 mb-12">
-          <a href="#" class="nav-link text-charcoal">Services</a>
-          <a href="#" class="nav-link text-charcoal">Approach</a>
-          <a href="#" class="nav-link text-charcoal">Work</a>
-          <a href="#" class="nav-link text-charcoal">Insights</a>
-          <a href="#" class="nav-link text-charcoal">Contact</a>
-        </div>
+    <Insights />
 
-        <!-- CTA button -->
-        <button class="bg-charcoal text-cream px-6 py-3 rounded hover:bg-deep-sage transition-colors">
-          Start a Conversation
-        </button>
-      </div>
-    </div>
+    <Contact />
   </main>
 </Layout>

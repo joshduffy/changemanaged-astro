@@ -1,0 +1,91 @@
+---
+const caseStudies = [
+  {
+    title: 'Global Pharmaceutical SAP S/4HANA Implementation',
+    metadata: 'Life Sciences | 18 months | Cross-functional team of 100+',
+    challenge: 'A global biopharmaceutical company required enterprise-wide change management for a critical SAP S/4HANA transformation affecting operations across 100+ countries.',
+    approach: [
+      'Led comprehensive change management strategy for 18-month implementation timeline',
+      'Developed multi-tiered training programs achieving 95% user adoption rates',
+      'Implemented stakeholder engagement across the enterprise, conducting global roadshows, design sessions, and activating a 150+ member change network',
+      'Created multichannel communication plans tailored to diverse global audiences',
+    ],
+    results: [
+      'On-time go-live with zero compliance issues',
+      'User adoption exceeding industry benchmarks',
+      'Measurable productivity improvements within 60 days',
+      'Sustained adoption rates at 6-month mark',
+    ],
+  },
+  {
+    title: 'Global Data & Analytics Carve-Out',
+    metadata: 'Media & Information Services | 24 months | Program team of 150+',
+    challenge: 'Private equity firm needed to carve out a $3.5B global data and analytics business from a Fortune 500 parent, establishing completely independent technology infrastructure to meet aggressive TSA exit deadlines.',
+    approach: [
+      'Established PMO to orchestrate separation of 4,000+ employees across 100 countries',
+      'Led technology separation across dozens of integrated platforms and proprietary systems',
+      'Managed parallel workstreams spanning IT, HR, Finance, Legal, and Operations',
+      'Coordinated global teams across North America, Europe, and Asia-Pacific time zones',
+    ],
+    results: [
+      'Delivered standalone technology stack within TSA timeline — rare for this complexity',
+      'Achieved clean Day 1 operations with zero business disruption',
+      'Maintained 100% continuity for thousands of enterprise clients',
+      'Enabled new entity to operate independently from transaction close',
+      'Created foundation for what became a $2B+ publicly traded leader',
+    ],
+  },
+];
+---
+
+<section id="work" class="py-20 px-6 bg-linen">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-light text-charcoal mb-4">Representative Work</h2>
+    <p class="text-graphite mb-12 max-w-2xl">
+      Examples of successful transformation initiatives across industries.
+    </p>
+
+    <div class="space-y-8">
+      {caseStudies.map((study) => (
+        <div class="card-hover bg-white rounded-lg p-8 border border-gray-100">
+          <h3 class="text-xl font-medium text-charcoal mb-2">{study.title}</h3>
+          <p class="text-sm text-taupe mb-4">{study.metadata}</p>
+
+          <p class="text-graphite mb-6">{study.challenge}</p>
+
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Approach -->
+            <div>
+              <h4 class="text-sm font-medium text-taupe uppercase tracking-wide mb-4">Approach</h4>
+              <ul class="space-y-3">
+                {study.approach.map((item) => (
+                  <li class="flex items-start gap-2">
+                    <svg class="w-4 h-4 text-deep-sage mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span class="text-sm text-graphite">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- Results -->
+            <div>
+              <h4 class="text-sm font-medium text-taupe uppercase tracking-wide mb-4">Results</h4>
+              <ul class="space-y-3">
+                {study.results.map((item) => (
+                  <li class="flex items-start gap-2">
+                    <svg class="w-4 h-4 text-deep-sage mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    <span class="text-sm text-graphite">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
