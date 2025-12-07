@@ -13,11 +13,12 @@ const engagementModels = [
       <!-- Left Column: Form -->
       <div>
         <h2 class="text-3xl font-light text-cream mb-4">Let's Connect</h2>
-        <p class="text-stone mb-8 max-w-md">
+        <p id="contact-subtitle" class="text-stone mb-8 max-w-md">
           Available for strategic advisory, transformation leadership, and interim executive engagements.
         </p>
 
-        <form id="contact-form" class="space-y-4">
+        <div id="form-container">
+          <form id="contact-form" class="space-y-4">
           <div class="grid md:grid-cols-2 gap-4">
             <div>
               <label for="firstname" class="block text-sm text-stone mb-1">First Name</label>
@@ -90,21 +91,12 @@ const engagementModels = [
             Send Message
           </button>
 
-          <!-- Success Message -->
-          <div id="form-success" class="hidden text-center py-4">
-            <div class="inline-flex items-center gap-2 text-deep-sage">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              <span class="text-cream">Message Received</span>
-            </div>
-          </div>
-
           <!-- Error Message -->
           <div id="form-error" class="hidden text-center py-4 text-red-400">
             Something went wrong. Please try again.
           </div>
         </form>
+        </div>
       </div>
 
       <!-- Right Column: Contact Info -->
@@ -163,45 +155,58 @@ const engagementModels = [
   </div>
 </section>
 
-<script define:vars={{ portalId: '244508325', formGuid: '38080cd1-4438-430c-9a17-f20d05c2924c' }}>
-  const form = document.getElementById('contact-form');
-  const successEl = document.getElementById('form-success');
-  const errorEl = document.getElementById('form-error');
+<script is:inline>
+  console.log('Contact script loaded!');
 
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  var PORTAL_ID = '244508325';
+  var FORM_GUID = '38080cd1-4438-430c-9a17-f20d05c2924c';
 
-    const formData = new FormData(form);
-    const fields = [];
+  var form = document.getElementById('contact-form');
+  var formContainer = document.getElementById('form-container');
+  var subtitle = document.getElementById('contact-subtitle');
+  var errorEl = document.getElementById('form-error');
 
-    formData.forEach((value, key) => {
-      if (value) {
-        fields.push({ name: key, value: value.toString() });
-      }
-    });
+  console.log('Form found:', !!form);
 
-    try {
-      const response = await fetch(
-        `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`,
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      console.log('Form submitted!');
+
+      var formData = new FormData(form);
+      var fields = [];
+
+      formData.forEach(function(value, key) {
+        if (value) {
+          fields.push({ name: key, value: value.toString() });
+        }
+      });
+
+      fetch(
+        'https://api.hsforms.com/submissions/v3/integration/submit/' + PORTAL_ID + '/' + FORM_GUID,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ fields }),
+          body: JSON.stringify({ fields: fields }),
         }
-      );
-
-      if (response.ok) {
-        form.classList.add('hidden');
-        successEl?.classList.remove('hidden');
-        errorEl?.classList.add('hidden');
-      } else {
-        throw new Error('Form submission failed');
-      }
-    } catch (error) {
-      errorEl?.classList.remove('hidden');
-      successEl?.classList.add('hidden');
-    }
-  });
+      )
+      .then(function(response) {
+        console.log('Response:', response.status);
+        if (response.ok) {
+          if (formContainer) {
+            formContainer.innerHTML = '<div class="text-center py-8"><div class="flex flex-col items-center gap-4"><div style="width:64px;height:64px;background:#2D5F4F;border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg style="width:32px;height:32px;color:#FAFAF8;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div><p style="color:#FAFAF8;font-size:1.25rem;">Thanks, we\'ll be in touch within one business day.</p></div></div>';
+          }
+          if (subtitle) subtitle.style.display = 'none';
+        } else {
+          throw new Error('Form submission failed');
+        }
+      })
+      .catch(function(error) {
+        console.log('Error:', error);
+        if (errorEl) errorEl.style.display = 'block';
+      });
+    });
+  }
 </script>
