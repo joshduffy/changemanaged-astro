@@ -81,4 +81,4 @@ Sometimes structure really is the constraint. But verify before assuming.
 
 ---
 
-*If you're contemplating an organizational redesign—or recovering from one that didn't work—[let's talk](#contact) about how to approach it differently.*
+*If you're contemplating an organizational redesign—or recovering from one that didn't work—[let's talk](/#contact) about how to approach it differently.*

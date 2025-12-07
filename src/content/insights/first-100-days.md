@@ -52,4 +52,4 @@ The first 100 days don't have to be dramatic. They have to be deliberate. People
 
 ---
 
-*If you're approaching a merger or acquisition and want to discuss integration planning, [reach out](#contact). We've supported transactions from $50M to $3.5B across industries.*
+*If you're approaching a merger or acquisition and want to discuss integration planning, [reach out](/#contact). We've supported transactions from $50M to $3.5B across industries.*

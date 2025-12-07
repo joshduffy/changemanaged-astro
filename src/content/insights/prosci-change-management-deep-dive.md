@@ -63,4 +63,4 @@ PROSCI certification teaches you the model. Experience teaches you when to devia
 
 ---
 
-*If you're planning a transformation and want experienced guidance—not just methodology, but judgment—[let's talk](#contact).*
+*If you're planning a transformation and want experienced guidance—not just methodology, but judgment—[let's talk](/#contact).*

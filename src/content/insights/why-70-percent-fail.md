@@ -58,4 +58,4 @@ When everyone sees the same picture, energy goes toward solving problems instead
 
 ---
 
-*If your transformation feels heavy on motion but light on progress, [let's talk](#contact). We help organizations redirect energy toward outcomes that actually stick.*
+*If your transformation feels heavy on motion but light on progress, [let's talk](/#contact). We help organizations redirect energy toward outcomes that actually stick.*
