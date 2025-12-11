@@ -1,20 +1,19 @@
 ---
-const posts = [
-  {
-    slug: 'first-100-days',
-    title: 'The First 100 Days: A Practical Guide to Merger Integration',
-    date: 'October 2024',
-    readTime: '8 min read',
-    excerpt: "The first 100 days don't have to be dramatic. They have to be deliberate. Here's how we run Day 0 through Day 100 so customers stay, employees exhale, and the thesis starts showing up in numbers.",
-  },
-  {
-    slug: 'why-70-percent-fail',
-    title: 'Why 70% of Transformations Fail (And How to Be in the 30%)',
-    date: 'September 2024',
-    readTime: '6 min read',
-    excerpt: "Whether the exact percentage is 70 or 57 is less interesting than the pattern: programs fail for the same human reasons. Here's how we run them differently so the value actually shows up.",
-  },
-];
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('insights');
+
+// Sort by date (newest first) and take first 3 for homepage preview
+const posts = allPosts
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3)
+  .map(post => ({
+    slug: post.id.replace(/\.md$/, ''),
+    title: post.data.title,
+    date: post.data.date,
+    readTime: post.data.readTime,
+    excerpt: post.data.excerpt,
+  }));
 ---
 
 <section id="insights" class="py-20 px-6 bg-cream">
