@@ -24,6 +24,15 @@ const { title = 'Change Managed | Complex transformation. Simple execution.' } =
     <!-- Umami Analytics -->
     <script defer src="https://umami-changemanaged.vercel.app/script.js" data-website-id="0a7e8725-bc93-4d05-b2d4-0d2be01a3793"></script>
 
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H55HMN28VL"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-H55HMN28VL');
+    </script>
+
     <title>{title}</title>
   </head>
   <body class="antialiased">

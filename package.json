@@ -9,9 +9,11 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.1",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.17",
     "astro": "^5.16.4",
+    "googleapis": "^168.0.0",
     "tailwindcss": "^4.1.17"
   }
 }
