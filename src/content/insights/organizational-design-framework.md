@@ -1,6 +1,7 @@
 ---
 title: "Organizational Design: Why Most Redesigns Fail (And What to Do Instead)"
 date: "May 2024"
+dateISO: "2024-05-15"
 readTime: "9 min read"
 excerpt: "McKinsey research shows less than 25% of org redesigns meet their objectives. Here's a practitioner's framework for beating those odds."
 ---

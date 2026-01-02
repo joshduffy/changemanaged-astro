@@ -1,6 +1,7 @@
 ---
 title: "M&A Integration: What Actually Happens After the Deal Closes"
 date: "September 2024"
+dateISO: "2024-09-20"
 readTime: "8 min read"
 excerpt: "The 100-day plan is a convenient fiction. Here's what actually happens when the deal closes and reality sets in."
 ---

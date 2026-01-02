@@ -5,19 +5,91 @@ import Nav from '../components/Nav.astro';
 interface Props {
   title: string;
   date: string;
+  dateISO?: string;
   readTime: string;
+  excerpt: string;
+  slug: string;
 }
 
-const { title, date, readTime } = Astro.props;
+const { title, date, dateISO, readTime, excerpt, slug } = Astro.props;
 
 // Split title at colon for better formatting
 const titleParts = title.includes(':') ? title.split(':') : [title];
 const mainTitle = titleParts[0].trim();
 const subtitle = titleParts.length > 1 ? titleParts.slice(1).join(':').trim() : null;
+
+// SEO data
+const canonicalUrl = `https://changemanaged.io/insights/${slug}`;
+const fullTitle = `${title} | Change Managed`;
+
+// Article schema
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": excerpt,
+  "datePublished": dateISO || "2024-01-01",
+  "dateModified": dateISO || "2024-01-01",
+  "author": {
+    "@type": "Organization",
+    "name": "Change Managed",
+    "url": "https://changemanaged.io"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Change Managed",
+    "url": "https://changemanaged.io",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://changemanaged.io/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+
+// Breadcrumb schema
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://changemanaged.io"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Insights",
+      "item": "https://changemanaged.io/insights"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": title
+    }
+  ]
+};
 ---
 
-<Layout title={`${title} | Change Managed`}>
+<Layout
+  title={fullTitle}
+  description={excerpt}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+  publishedDate={dateISO}
+>
   <Nav />
+
+  <!-- Article Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  <!-- Breadcrumb Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 
   <article class="pt-32 pb-20 px-6 bg-cream">
     <div class="max-w-3xl mx-auto">

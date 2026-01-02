@@ -1,6 +1,7 @@
 ---
 title: "The First 100 Days: A Practical Guide to Merger Integration"
 date: "October 2024"
+dateISO: "2024-10-15"
 readTime: "8 min read"
 excerpt: "The first 100 days don't have to be dramatic. They have to be deliberate. Here's how we run Day 0 through Day 100 so customers stay, employees exhale, and the thesis starts showing up in numbers."
 ---

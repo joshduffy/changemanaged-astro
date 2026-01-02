@@ -1,6 +1,7 @@
 ---
 title: "Why 70% of Transformations Fail (And How to Be in the 30%)"
 date: "September 2024"
+dateISO: "2024-09-15"
 readTime: "6 min read"
 excerpt: "Whether the exact percentage is 70 or 57 is less interesting than the pattern: programs fail for the same human reasons. Here's how we run them differently so the value actually shows up."
 ---

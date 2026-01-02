@@ -1,0 +1,13 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#2D5F4F"/>
+
+  <!-- Delta Symbol -->
+  <path d="M600 180L720 420H480L600 180Z" stroke="#FAFAF8" stroke-width="4" stroke-linejoin="miter" fill="none"/>
+
+  <!-- CHANGE text -->
+  <text x="600" y="500" font-family="Inter, system-ui, sans-serif" font-size="48" font-weight="300" fill="#FAFAF8" text-anchor="middle" letter-spacing="0.1em">CHANGE</text>
+
+  <!-- MANAGED text -->
+  <text x="600" y="560" font-family="Inter, system-ui, sans-serif" font-size="48" font-weight="700" fill="#FAFAF8" text-anchor="middle" letter-spacing="0.1em">MANAGED</text>
+</svg>

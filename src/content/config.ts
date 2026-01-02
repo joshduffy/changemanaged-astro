@@ -5,8 +5,10 @@ const insights = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.string(),
+    dateISO: z.string().optional(), // ISO 8601 format for schema markup
     readTime: z.string(),
     excerpt: z.string(),
+    ogImage: z.string().optional(), // Optional per-post social image
   }),
 });
 

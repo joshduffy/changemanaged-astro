@@ -1,6 +1,7 @@
 ---
 title: "PROSCI Change Management: What the Certification Doesn't Teach You"
 date: "November 2024"
+dateISO: "2024-11-15"
 readTime: "10 min read"
 excerpt: "PROSCI gives you the framework. Experience teaches you where it breaks. After deploying ADKAR across dozens of enterprise transformations, here's what actually moves the needle."
 ---
