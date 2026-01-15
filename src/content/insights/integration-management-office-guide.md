@@ -6,7 +6,7 @@ readTime: "11 min read"
 excerpt: "The IMO is the nerve center of any successful integration. Here's how to structure it, staff it, and run it so deals actually capture their intended value."
 ---
 
-Every M&A integration needs a center of gravity—a place where decisions get made, issues get resolved, and the work gets coordinated. That's the Integration Management Office, or IMO.
+Every M&A integration needs a center of gravity: a place where decisions get made, issues get resolved, and the work gets coordinated. That's the Integration Management Office, or IMO.
 
 Done right, an IMO turns chaos into execution. Done wrong, it becomes another layer of bureaucracy that slows everything down while adding nothing. The difference comes down to three things: structure, authority, and operating rhythm.
 
@@ -20,7 +20,7 @@ Before designing the structure, be clear about the function. The IMO exists to:
 4. **Communicate** status to leadership and stakeholders
 5. **Document** decisions so they don't get relitigated
 
-That's it. The IMO doesn't do the integration work—the functional teams do. The IMO makes sure the work gets done, dependencies are managed, and leadership has visibility.
+That's it. The IMO doesn't do the integration work. The functional teams do. The IMO makes sure the work gets done, dependencies are managed, and leadership has visibility.
 
 ## IMO Structure That Scales
 
@@ -79,7 +79,7 @@ The Steering Committee meets weekly during active integration, bi-weekly once th
 
 Here's where most IMOs fail: they have the structure but not the authority.
 
-The Integration Lead needs real decision-making power. Not "make recommendations" power—actual authority to resolve workstream conflicts, allocate resources, and hold people accountable.
+The Integration Lead needs real decision-making power. Not "make recommendations" power. Actual authority to resolve workstream conflicts, allocate resources, and hold people accountable.
 
 This means:
 
@@ -89,7 +89,7 @@ This means:
 - **Escalation Path**: Direct access to the Steering Committee when needed
 - **Performance Impact**: Integration work matters for performance reviews
 
-Without these, the IMO becomes a tracking function—useful for status reports, useless for driving outcomes.
+Without these, the IMO becomes a tracking function: useful for status reports, useless for driving outcomes.
 
 ## The Operating Rhythm
 
@@ -99,7 +99,7 @@ A good IMO runs on a predictable cadence:
 
 - Core IMO team only
 - What's blocked? What changed? What's due today?
-- Not a status update—a problem-solving session
+- Not a status update. A problem-solving session
 
 ### Weekly Workstream Sync (60-90 minutes)
 
@@ -179,7 +179,7 @@ Meetings should drive decisions, not fill calendars. If your integration calenda
 
 ### Ignoring Culture
 
-The IMO can't fix cultural integration through process. Cultural alignment happens (or doesn't) based on leadership behavior and decisions. The IMO can surface cultural issues—it can't solve them.
+The IMO can't fix cultural integration through process. Cultural alignment happens (or doesn't) based on leadership behavior and decisions. The IMO can surface cultural issues. It can't solve them.
 
 ### Treating Day 100 as the Finish Line
 
@@ -195,7 +195,7 @@ A functional IMO produces visible results:
 - **Dependencies are managed** before they become blockers
 - **Synergies get captured** on the timeline promised
 
-If you're not seeing these outcomes, something is broken—usually authority, operating rhythm, or both.
+If you're not seeing these outcomes, something is broken. Usually authority, operating rhythm, or both.
 
 ## Scaling for Different Deal Sizes
 
@@ -231,7 +231,7 @@ If you're setting up an IMO, start here:
 2. **Appoint the Integration Lead** with explicit authority
 3. **Define the workstreams** based on your specific deal
 4. **Establish the operating rhythm** and stick to it
-5. **Create the decision log** on Day 1—you'll be glad you did
+5. **Create the decision log** on Day 1. You'll be glad you did
 
 The IMO is not the goal. Capturing the value of the deal is the goal. The IMO is just the mechanism that makes it happen.
 

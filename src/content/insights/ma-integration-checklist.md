@@ -6,7 +6,7 @@ readTime: "12 min read"
 excerpt: "A comprehensive, actionable checklist for merger integration covering pre-close preparation through the first 100 days. Built from dozens of real transactions."
 ---
 
-Every integration starts with optimism and a slide deck. Most end with missed synergies, departed talent, and confused customers. The difference between the two usually comes down to execution discipline—knowing what to do, when to do it, and who owns it.
+Every integration starts with optimism and a slide deck. Most end with missed synergies, departed talent, and confused customers. The difference between the two usually comes down to execution discipline: knowing what to do, when to do it, and who owns it.
 
 This checklist is built from real transactions ranging from $50M tuck-ins to $3B+ enterprise deals. Use it as a starting point. Adapt it to your context. But don't skip the basics.
 
@@ -232,7 +232,7 @@ No checklist can replace judgment. This document covers *what* needs to happen. 
 - **Who** should make specific decisions for your context
 - **Why** certain trade-offs make sense for your specific deal
 
-For that, you need people who've done this before—ideally, people who've done this before and learned from what went wrong.
+For that, you need people who've done this before. Ideally, people who've done this before and learned from what went wrong.
 
 The best integration teams use a checklist like this as scaffolding, not scripture. They check the boxes, but they also watch for signals that the plan needs to change.
 
