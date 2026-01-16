@@ -1,0 +1,275 @@
+---
+import AdminLayout from "../../../../components/admin/AdminLayout.astro";
+
+const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
+const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
+
+const { id } = Astro.params;
+
+interface Survey {
+  id: number;
+  name: string;
+  status: string;
+}
+
+interface Token {
+  id: number;
+  email: string;
+  name: string | null;
+  created_at: string;
+  expires_at: string;
+  used_at: string | null;
+  token?: string;
+  survey_url?: string;
+}
+
+let survey: Survey | null = null;
+let tokens: Token[] = [];
+let error: string | null = null;
+
+try {
+  // Fetch survey details
+  const surveyRes = await fetch(`${apiUrl}/api/surveys/${id}`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+
+  if (surveyRes.ok) {
+    const data = await surveyRes.json();
+    survey = data.survey;
+  } else {
+    error = "Survey not found";
+  }
+
+  // Fetch tokens for this survey
+  if (survey) {
+    const tokensRes = await fetch(`${apiUrl}/api/admin/tokens`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+
+    if (tokensRes.ok) {
+      const data = await tokensRes.json();
+      // Filter tokens for this survey
+      tokens = (data.tokens || []).filter((t: any) => t.survey_id === parseInt(id as string));
+    }
+  }
+} catch {
+  error = "Failed to connect to API";
+}
+
+function getStatus(token: Token): { label: string; class: string } {
+  if (token.used_at) {
+    return { label: "Completed", class: "bg-green-100 text-green-700" };
+  }
+  if (new Date(token.expires_at) < new Date()) {
+    return { label: "Expired", class: "bg-red-100 text-red-700" };
+  }
+  return { label: "Pending", class: "bg-yellow-100 text-yellow-700" };
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export const prerender = false;
+---
+
+<AdminLayout title={survey ? `Tokens: ${survey.name}` : "Survey Not Found"} currentPage="surveys">
+  {error ? (
+    <div class="bg-red-50 rounded-xl border border-red-200 p-6">
+      <h2 class="text-lg font-medium text-red-800">{error}</h2>
+      <a href="/admin/surveys" class="text-red-600 underline mt-2 inline-block">Back to surveys</a>
+    </div>
+  ) : survey && (
+    <div class="max-w-4xl">
+      <!-- Back Link -->
+      <a href={`/admin/surveys/${id}`} class="inline-flex items-center gap-2 text-graphite hover:text-charcoal mb-6">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Survey
+      </a>
+
+      <!-- Create Tokens Section -->
+      <div class="bg-cream rounded-xl border border-stone/30 p-6 mb-6">
+        <h2 class="text-lg font-semibold text-charcoal mb-4">Create Survey Tokens</h2>
+
+        <form id="create-tokens-form" class="space-y-4">
+          <div>
+            <label for="emails" class="block text-sm font-medium text-charcoal mb-2">
+              Email Addresses (one per line)
+            </label>
+            <textarea
+              id="emails"
+              name="emails"
+              rows="4"
+              required
+              class="w-full px-4 py-3 rounded-lg border border-stone/30 focus:ring-2 focus:ring-deep-sage focus:border-transparent font-mono text-sm resize-none"
+              placeholder="john@example.com&#10;jane@example.com&#10;bob@example.com"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <button
+              type="submit"
+              id="create-btn"
+              class="inline-flex items-center gap-2 bg-deep-sage text-white px-4 py-2 rounded-lg hover:bg-muted-sage transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Create Tokens
+            </button>
+            <span id="create-status" class="text-sm text-graphite hidden"></span>
+          </div>
+        </form>
+
+        <!-- Newly Created Tokens -->
+        <div id="new-tokens-section" class="hidden mt-6 pt-6 border-t border-stone/20">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-medium text-charcoal">Created Tokens</h3>
+            <button
+              id="copy-all-btn"
+              class="text-sm text-deep-sage hover:text-muted-sage"
+            >
+              Copy All URLs
+            </button>
+          </div>
+          <div id="new-tokens-list" class="space-y-2 font-mono text-sm bg-linen rounded-lg p-4 max-h-48 overflow-y-auto">
+          </div>
+        </div>
+      </div>
+
+      <!-- Existing Tokens Table -->
+      <div class="bg-cream rounded-xl border border-stone/30 overflow-hidden">
+        <div class="px-6 py-4 border-b border-stone/30">
+          <h3 class="font-semibold text-charcoal">Existing Tokens ({tokens.length})</h3>
+        </div>
+
+        <table class="w-full">
+          <thead class="bg-linen border-b border-stone/30">
+            <tr>
+              <th class="text-left px-6 py-3 text-sm font-medium text-charcoal">Email</th>
+              <th class="text-left px-6 py-3 text-sm font-medium text-charcoal">Status</th>
+              <th class="text-left px-6 py-3 text-sm font-medium text-charcoal">Created</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-stone/20">
+            {tokens.length === 0 ? (
+              <tr>
+                <td colspan="3" class="px-6 py-8 text-center text-graphite">
+                  No tokens created yet
+                </td>
+              </tr>
+            ) : (
+              tokens.map((token) => {
+                const status = getStatus(token);
+                return (
+                  <tr class="hover:bg-linen/50">
+                    <td class="px-6 py-3 text-sm text-charcoal">{token.email}</td>
+                    <td class="px-6 py-3">
+                      <span class={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status.class}`}>
+                        {status.label}
+                      </span>
+                    </td>
+                    <td class="px-6 py-3 text-sm text-graphite">{formatDate(token.created_at)}</td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )}
+
+  <script is:inline define:vars={{ apiUrl, apiKey, surveyId: id }}>
+    const form = document.getElementById('create-tokens-form');
+    const createBtn = document.getElementById('create-btn');
+    const createStatus = document.getElementById('create-status');
+    const newTokensSection = document.getElementById('new-tokens-section');
+    const newTokensList = document.getElementById('new-tokens-list');
+    const copyAllBtn = document.getElementById('copy-all-btn');
+
+    let createdTokens = [];
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const emailsText = document.getElementById('emails').value;
+      const emails = emailsText.split('\n').map(e => e.trim()).filter(e => e);
+
+      if (emails.length === 0) {
+        alert('Please enter at least one email address');
+        return;
+      }
+
+      createBtn.disabled = true;
+      createBtn.textContent = 'Creating...';
+      createStatus.classList.add('hidden');
+
+      try {
+        const response = await fetch(`${apiUrl}/api/admin/tokens`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            survey_id: parseInt(surveyId),
+            respondents: emails.map(email => ({ email })),
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create tokens');
+        }
+
+        const data = await response.json();
+        createdTokens = data.created || [];
+
+        // Show created tokens
+        newTokensList.innerHTML = createdTokens.map(t =>
+          `<div class="flex items-center justify-between py-1">
+            <span class="text-graphite">${t.email}</span>
+            <span class="text-charcoal truncate ml-4">${t.survey_url}</span>
+          </div>`
+        ).join('');
+
+        newTokensSection.classList.remove('hidden');
+
+        createStatus.textContent = `Created ${createdTokens.length} tokens`;
+        createStatus.classList.remove('hidden');
+
+        // Clear form
+        document.getElementById('emails').value = '';
+
+      } catch (error) {
+        alert('Error: ' + error.message);
+      } finally {
+        createBtn.disabled = false;
+        createBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Create Tokens
+        `;
+      }
+    });
+
+    copyAllBtn?.addEventListener('click', async () => {
+      const urls = createdTokens.map(t => `${t.email}\t${t.survey_url}`).join('\n');
+      try {
+        await navigator.clipboard.writeText(urls);
+        copyAllBtn.textContent = 'Copied!';
+        setTimeout(() => copyAllBtn.textContent = 'Copy All URLs', 2000);
+      } catch {
+        alert('Failed to copy');
+      }
+    });
+  </script>
+</AdminLayout>

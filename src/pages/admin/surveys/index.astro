@@ -1,0 +1,160 @@
+---
+import AdminLayout from "../../../components/admin/AdminLayout.astro";
+
+const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
+const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
+
+interface Survey {
+  id: number;
+  name: string;
+  description: string | null;
+  status: "draft" | "active" | "archived";
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  question_count: number;
+}
+
+let surveys: Survey[] = [];
+let summary = { total: 0, draft: 0, active: 0, archived: 0 };
+
+try {
+  const response = await fetch(`${apiUrl}/api/surveys`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (response.ok) {
+    const data = await response.json();
+    surveys = data.surveys || [];
+    summary = data.summary || summary;
+  }
+} catch {
+  // Use empty list on error
+}
+
+function getStatusStyle(status: string): { label: string; class: string } {
+  switch (status) {
+    case "active":
+      return { label: "Active", class: "bg-green-100 text-green-700" };
+    case "archived":
+      return { label: "Archived", class: "bg-gray-100 text-gray-600" };
+    default:
+      return { label: "Draft", class: "bg-yellow-100 text-yellow-700" };
+  }
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export const prerender = false;
+---
+
+<AdminLayout title="Surveys" currentPage="surveys">
+  <!-- Header with Actions -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-graphite">
+        {summary.total} total &middot; {summary.active} active &middot; {summary.draft} drafts
+      </span>
+    </div>
+    <a
+      href="/admin/surveys/create"
+      class="inline-flex items-center gap-2 bg-deep-sage text-white px-4 py-2 rounded-lg hover:bg-muted-sage transition-colors"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      Create Survey
+    </a>
+  </div>
+
+  <!-- Surveys Table -->
+  <div class="bg-cream rounded-xl border border-stone/30 overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-linen border-b border-stone/30">
+        <tr>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Name</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Questions</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Status</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Created</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone/20">
+        {
+          surveys.length === 0 ? (
+            <tr>
+              <td colspan="5" class="px-6 py-12 text-center text-graphite">
+                No surveys found.{" "}
+                <a href="/admin/surveys/create" class="text-deep-sage hover:underline">
+                  Create your first survey
+                </a>
+              </td>
+            </tr>
+          ) : (
+            surveys.map((survey) => {
+              const status = getStatusStyle(survey.status);
+              return (
+                <tr class="hover:bg-linen/50">
+                  <td class="px-6 py-4">
+                    <div class="font-medium text-charcoal">{survey.name}</div>
+                    {survey.description && (
+                      <div class="text-sm text-graphite truncate max-w-md">{survey.description}</div>
+                    )}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-charcoal">{survey.question_count}</td>
+                  <td class="px-6 py-4">
+                    <span class={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status.class}`}>
+                      {status.label}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-graphite">{formatDate(survey.created_at)}</td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <a
+                        href={`/admin/surveys/${survey.id}`}
+                        class="text-deep-sage hover:text-muted-sage text-sm font-medium"
+                      >
+                        Edit
+                      </a>
+                      {survey.status === "active" && (
+                        <a
+                          href={`/admin/surveys/${survey.id}/tokens`}
+                          class="text-deep-sage hover:text-muted-sage text-sm font-medium"
+                        >
+                          Tokens
+                        </a>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
+          )
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Feature Info -->
+  <div class="mt-8 p-6 bg-linen rounded-xl border border-stone/30">
+    <h3 class="font-medium text-charcoal mb-2">AI Survey Builder</h3>
+    <p class="text-sm text-graphite mb-4">
+      Create professional surveys using AI. Describe your survey goals in plain language
+      and let DeepSeek R1 generate well-structured questions for you.
+    </p>
+    <a
+      href="/admin/surveys/create"
+      class="inline-flex items-center gap-2 text-deep-sage hover:text-muted-sage text-sm font-medium"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+      Try AI Survey Builder
+    </a>
+  </div>
+</AdminLayout>

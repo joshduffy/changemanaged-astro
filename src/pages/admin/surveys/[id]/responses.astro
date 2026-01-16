@@ -1,0 +1,136 @@
+---
+import AdminLayout from "../../../../components/admin/AdminLayout.astro";
+
+const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
+const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
+
+const { id } = Astro.params;
+
+interface Question {
+  id: number;
+  section: string;
+  text: string;
+  type: string;
+}
+
+interface Response {
+  submission_id: string;
+  submitted_at: string;
+  respondent_email: string;
+  respondent_name: string;
+  answers: Record<string, string>;
+}
+
+interface ExportData {
+  survey: { id: number; name: string; description: string };
+  questions: Question[];
+  responses: Response[];
+  summary: { total_responses: number };
+}
+
+let data: ExportData | null = null;
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${apiUrl}/api/surveys/${id}/export`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+
+  if (response.ok) {
+    data = await response.json();
+  } else {
+    error = "Failed to load responses";
+  }
+} catch {
+  error = "Failed to connect to API";
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+export const prerender = false;
+---
+
+<AdminLayout title={data ? `Responses: ${data.survey.name}` : "Responses"} currentPage="surveys">
+  {error ? (
+    <div class="bg-red-50 rounded-xl border border-red-200 p-6">
+      <h2 class="text-lg font-medium text-red-800">{error}</h2>
+      <a href="/admin/surveys" class="text-red-600 underline mt-2 inline-block">Back to surveys</a>
+    </div>
+  ) : data && (
+    <div>
+      <!-- Back Link & Actions -->
+      <div class="flex items-center justify-between mb-6">
+        <a href={`/admin/surveys/${id}`} class="inline-flex items-center gap-2 text-graphite hover:text-charcoal">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Survey
+        </a>
+
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-graphite">{data.summary.total_responses} responses</span>
+          <a
+            href={`${apiUrl}/api/surveys/${id}/export?format=csv&token=${apiKey}`}
+            class="inline-flex items-center gap-2 bg-deep-sage text-white px-4 py-2 rounded-lg hover:bg-muted-sage transition-colors text-sm"
+            download
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export CSV
+          </a>
+        </div>
+      </div>
+
+      {data.responses.length === 0 ? (
+        <div class="bg-cream rounded-xl border border-stone/30 p-12 text-center">
+          <svg class="w-12 h-12 text-stone mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+          </svg>
+          <h3 class="text-lg font-medium text-charcoal mb-2">No responses yet</h3>
+          <p class="text-graphite">Responses will appear here once participants complete the survey.</p>
+        </div>
+      ) : (
+        <div class="space-y-4">
+          {data.responses.map((response, idx) => (
+            <div class="bg-cream rounded-xl border border-stone/30 overflow-hidden">
+              <div class="px-6 py-4 bg-linen border-b border-stone/30 flex items-center justify-between">
+                <div>
+                  <span class="font-medium text-charcoal">
+                    {response.respondent_name || response.respondent_email}
+                  </span>
+                  {response.respondent_name && (
+                    <span class="text-sm text-graphite ml-2">{response.respondent_email}</span>
+                  )}
+                </div>
+                <span class="text-sm text-graphite">{formatDate(response.submitted_at)}</span>
+              </div>
+
+              <div class="p-6 space-y-4">
+                {data.questions.map((question) => {
+                  const answer = response.answers[question.id];
+                  return (
+                    <div class="border-b border-stone/20 pb-4 last:border-0 last:pb-0">
+                      <p class="text-sm text-graphite mb-1">{question.text}</p>
+                      <p class="text-charcoal">
+                        {answer || <span class="text-stone italic">No answer</span>}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+</AdminLayout>

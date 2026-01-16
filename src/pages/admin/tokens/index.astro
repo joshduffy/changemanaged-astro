@@ -1,0 +1,150 @@
+---
+import AdminLayout from "../../../components/admin/AdminLayout.astro";
+
+// Fetch tokens from the survey API
+const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
+const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
+
+interface Token {
+  id: number;
+  email: string;
+  name: string | null;
+  company: string;
+  created_at: string;
+  expires_at: string;
+  used_at: string | null;
+  token?: string;
+}
+
+let tokens: Token[] = [];
+let summary = { total: 0, used: 0, unused: 0, expired: 0 };
+
+try {
+  const response = await fetch(`${apiUrl}/api/admin/tokens`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (response.ok) {
+    const data = await response.json();
+    tokens = data.tokens || [];
+    summary = data.summary || summary;
+  }
+} catch {
+  // Use empty list on error
+}
+
+function getStatus(token: Token): { label: string; class: string } {
+  if (token.used_at) {
+    return { label: "Used", class: "bg-green-100 text-green-700" };
+  }
+  if (new Date(token.expires_at) < new Date()) {
+    return { label: "Expired", class: "bg-red-100 text-red-700" };
+  }
+  return { label: "Pending", class: "bg-yellow-100 text-yellow-700" };
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export const prerender = false;
+---
+
+<AdminLayout title="Survey Tokens" currentPage="tokens">
+  <!-- Header with Actions -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-graphite">
+        {summary.total} total &middot; {summary.used} used &middot; {summary.unused} pending
+      </span>
+    </div>
+    <a
+      href="/admin/tokens/create"
+      class="inline-flex items-center gap-2 bg-deep-sage text-white px-4 py-2 rounded-lg hover:bg-muted-sage transition-colors"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      Create Tokens
+    </a>
+  </div>
+
+  <!-- Tokens Table -->
+  <div class="bg-cream rounded-xl border border-stone/30 overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-linen border-b border-stone/30">
+        <tr>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Name</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Email</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Company</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Status</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Created</th>
+          <th class="text-left px-6 py-4 text-sm font-medium text-charcoal">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone/20">
+        {
+          tokens.length === 0 ? (
+            <tr>
+              <td colspan="6" class="px-6 py-12 text-center text-graphite">
+                No tokens found.{" "}
+                <a href="/admin/tokens/create" class="text-deep-sage hover:underline">
+                  Create your first token
+                </a>
+              </td>
+            </tr>
+          ) : (
+            tokens.map((token) => {
+              const status = getStatus(token);
+              return (
+                <tr class="hover:bg-linen/50">
+                  <td class="px-6 py-4 text-sm text-charcoal">{token.name || "-"}</td>
+                  <td class="px-6 py-4 text-sm text-charcoal">{token.email}</td>
+                  <td class="px-6 py-4 text-sm text-charcoal">{token.company}</td>
+                  <td class="px-6 py-4">
+                    <span class={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status.class}`}>
+                      {status.label}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-graphite">{formatDate(token.created_at)}</td>
+                  <td class="px-6 py-4">
+                    <button
+                      class="copy-btn text-deep-sage hover:text-muted-sage text-sm font-medium"
+                      data-token-id={token.id}
+                      title="Copy survey URL"
+                    >
+                      Copy URL
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          )
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Copy URL Script -->
+  <script is:inline define:vars={{ apiUrl, apiKey }}>
+    document.querySelectorAll(".copy-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tokenId = btn.dataset.tokenId;
+        // For now, construct URL from token (we'd need to fetch the actual token)
+        // This is a placeholder - in production, fetch the token value
+        const surveyUrl = `${apiUrl.replace('/api', '')}/hoop?token=PLACEHOLDER`;
+        try {
+          await navigator.clipboard.writeText(surveyUrl);
+          const originalText = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = originalText), 2000);
+        } catch {
+          alert("Failed to copy URL");
+        }
+      });
+    });
+  </script>
+</AdminLayout>

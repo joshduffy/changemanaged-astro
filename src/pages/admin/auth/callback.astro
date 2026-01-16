@@ -1,0 +1,40 @@
+---
+export const prerender = false;
+
+// Handle magic link callback
+const token = Astro.url.searchParams.get("token");
+
+if (!token) {
+  return Astro.redirect("/admin/login?error=invalid_link");
+}
+
+// Verify the token with the survey API
+const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
+
+try {
+  const response = await fetch(`${apiUrl}/api/admin/auth?action=verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+
+    // Set session cookie (lax allows top-level navigation from email links)
+    Astro.cookies.set("admin_session", data.session_token, {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 24 hours
+    });
+
+    return Astro.redirect("/admin");
+  } else {
+    return Astro.redirect("/admin/login?error=invalid_link");
+  }
+} catch {
+  return Astro.redirect("/admin/login?error=server_error");
+}
+---

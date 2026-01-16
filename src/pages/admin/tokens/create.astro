@@ -1,0 +1,296 @@
+---
+import AdminLayout from "../../../components/admin/AdminLayout.astro";
+
+const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
+const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
+
+let error = "";
+let createdTokens: Array<{ name: string; email: string; survey_url: string }> = [];
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const mode = formData.get("mode")?.toString();
+
+  let respondents: Array<{ email: string; name?: string; company: string }> = [];
+
+  if (mode === "single") {
+    const email = formData.get("email")?.toString().trim();
+    const name = formData.get("name")?.toString().trim();
+    const company = formData.get("company")?.toString();
+
+    if (!email || !company) {
+      error = "Email and company are required.";
+    } else {
+      respondents = [{ email, name: name || undefined, company }];
+    }
+  } else if (mode === "bulk") {
+    const emails = formData.get("emails")?.toString().trim();
+    const company = formData.get("bulk_company")?.toString();
+
+    if (!emails || !company) {
+      error = "Emails and company are required.";
+    } else {
+      // Parse emails (one per line or comma-separated)
+      const emailList = emails
+        .split(/[\n,]/)
+        .map((e) => e.trim())
+        .filter((e) => e.includes("@"));
+
+      if (emailList.length === 0) {
+        error = "No valid emails found.";
+      } else if (emailList.length > 50) {
+        error = "Maximum 50 tokens per request.";
+      } else {
+        respondents = emailList.map((email) => ({ email, company }));
+      }
+    }
+  }
+
+  if (!error && respondents.length > 0) {
+    try {
+      const response = await fetch(`${apiUrl}/api/admin/tokens`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ respondents }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        createdTokens = data.created || [];
+        if (data.errors?.length > 0) {
+          error = `${data.errors.length} token(s) failed to create.`;
+        }
+      } else {
+        error = "Failed to create tokens. Please try again.";
+      }
+    } catch {
+      error = "Failed to create tokens. Please try again.";
+    }
+  }
+}
+
+export const prerender = false;
+---
+
+<AdminLayout title="Create Tokens" currentPage="tokens">
+  <div class="max-w-2xl">
+    <!-- Back Link -->
+    <a href="/admin/tokens" class="inline-flex items-center gap-1 text-graphite hover:text-deep-sage mb-6">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Tokens
+    </a>
+
+    {
+      error && (
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
+      )
+    }
+
+    {
+      createdTokens.length > 0 ? (
+        <div class="bg-cream rounded-xl border border-stone/30 p-6">
+          <h2 class="text-lg font-semibold text-charcoal mb-4">
+            {createdTokens.length} Token(s) Created
+          </h2>
+          <div class="space-y-4">
+            {createdTokens.map((token) => (
+              <div class="p-4 bg-linen rounded-lg">
+                <p class="font-medium text-charcoal">{token.name || token.email}</p>
+                <p class="text-sm text-graphite mb-2">{token.email}</p>
+                <div class="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={token.survey_url}
+                    readonly
+                    class="flex-1 px-3 py-2 text-sm bg-white border border-stone/30 rounded-lg"
+                  />
+                  <button
+                    class="copy-url-btn px-3 py-2 bg-deep-sage text-white text-sm rounded-lg hover:bg-muted-sage"
+                    data-url={token.survey_url}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div class="mt-6 flex gap-4">
+            <a
+              href="/admin/tokens/create"
+              class="inline-flex items-center gap-2 bg-deep-sage text-white px-4 py-2 rounded-lg hover:bg-muted-sage transition-colors"
+            >
+              Create More
+            </a>
+            <a
+              href="/admin/tokens"
+              class="inline-flex items-center gap-2 border border-stone text-charcoal px-4 py-2 rounded-lg hover:border-deep-sage transition-colors"
+            >
+              View All Tokens
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div class="bg-cream rounded-xl border border-stone/30 p-6">
+          <!-- Mode Tabs -->
+          <div class="flex border-b border-stone/30 mb-6">
+            <button
+              id="tab-single"
+              class="px-4 py-2 text-sm font-medium border-b-2 border-deep-sage text-deep-sage"
+            >
+              Single Token
+            </button>
+            <button id="tab-bulk" class="px-4 py-2 text-sm font-medium text-graphite hover:text-charcoal">
+              Bulk Create
+            </button>
+          </div>
+
+          <!-- Single Token Form -->
+          <form id="form-single" method="POST" class="space-y-6">
+            <input type="hidden" name="mode" value="single" />
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-charcoal mb-2">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="respondent@company.com"
+                class="w-full px-4 py-3 rounded-lg border border-stone/50 bg-white focus:border-deep-sage focus:ring-2 focus:ring-deep-sage/20 outline-none"
+              />
+            </div>
+
+            <div>
+              <label for="name" class="block text-sm font-medium text-charcoal mb-2">
+                Name (optional)
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="John Doe"
+                class="w-full px-4 py-3 rounded-lg border border-stone/50 bg-white focus:border-deep-sage focus:ring-2 focus:ring-deep-sage/20 outline-none"
+              />
+            </div>
+
+            <div>
+              <label for="company" class="block text-sm font-medium text-charcoal mb-2">
+                Company *
+              </label>
+              <select
+                id="company"
+                name="company"
+                required
+                class="w-full px-4 py-3 rounded-lg border border-stone/50 bg-white focus:border-deep-sage focus:ring-2 focus:ring-deep-sage/20 outline-none"
+              >
+                <option value="">Select company...</option>
+                <option value="Solenis">Solenis</option>
+                <option value="NCH">NCH (Legacy)</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-deep-sage text-white py-3 px-4 rounded-lg font-medium hover:bg-muted-sage transition-colors"
+            >
+              Create Token
+            </button>
+          </form>
+
+          <!-- Bulk Create Form -->
+          <form id="form-bulk" method="POST" class="space-y-6 hidden">
+            <input type="hidden" name="mode" value="bulk" />
+
+            <div>
+              <label for="emails" class="block text-sm font-medium text-charcoal mb-2">
+                Email Addresses * (one per line or comma-separated)
+              </label>
+              <textarea
+                id="emails"
+                name="emails"
+                rows="6"
+                required
+                placeholder="john@company.com&#10;jane@company.com&#10;bob@company.com"
+                class="w-full px-4 py-3 rounded-lg border border-stone/50 bg-white focus:border-deep-sage focus:ring-2 focus:ring-deep-sage/20 outline-none font-mono text-sm"
+              />
+              <p class="text-xs text-graphite mt-1">Maximum 50 emails per request</p>
+            </div>
+
+            <div>
+              <label for="bulk_company" class="block text-sm font-medium text-charcoal mb-2">
+                Company * (applies to all)
+              </label>
+              <select
+                id="bulk_company"
+                name="bulk_company"
+                required
+                class="w-full px-4 py-3 rounded-lg border border-stone/50 bg-white focus:border-deep-sage focus:ring-2 focus:ring-deep-sage/20 outline-none"
+              >
+                <option value="">Select company...</option>
+                <option value="Solenis">Solenis</option>
+                <option value="NCH">NCH (Legacy)</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-deep-sage text-white py-3 px-4 rounded-lg font-medium hover:bg-muted-sage transition-colors"
+            >
+              Create Tokens
+            </button>
+          </form>
+        </div>
+      )
+    }
+  </div>
+
+  <script is:inline>
+    // Tab switching
+    const tabSingle = document.getElementById("tab-single");
+    const tabBulk = document.getElementById("tab-bulk");
+    const formSingle = document.getElementById("form-single");
+    const formBulk = document.getElementById("form-bulk");
+
+    if (tabSingle && tabBulk && formSingle && formBulk) {
+      tabSingle.addEventListener("click", () => {
+        tabSingle.classList.add("border-deep-sage", "text-deep-sage");
+        tabSingle.classList.remove("text-graphite");
+        tabBulk.classList.remove("border-deep-sage", "text-deep-sage");
+        tabBulk.classList.add("text-graphite", "border-transparent");
+        formSingle.classList.remove("hidden");
+        formBulk.classList.add("hidden");
+      });
+
+      tabBulk.addEventListener("click", () => {
+        tabBulk.classList.add("border-deep-sage", "text-deep-sage");
+        tabBulk.classList.remove("text-graphite");
+        tabSingle.classList.remove("border-deep-sage", "text-deep-sage");
+        tabSingle.classList.add("text-graphite", "border-transparent");
+        formBulk.classList.remove("hidden");
+        formSingle.classList.add("hidden");
+      });
+    }
+
+    // Copy URL buttons
+    document.querySelectorAll(".copy-url-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const url = btn.dataset.url;
+        try {
+          await navigator.clipboard.writeText(url);
+          const originalText = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = originalText), 2000);
+        } catch {
+          alert("Failed to copy URL");
+        }
+      });
+    });
+  </script>
+</AdminLayout>

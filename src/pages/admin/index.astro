@@ -1,0 +1,95 @@
+---
+import AdminLayout from "../../components/admin/AdminLayout.astro";
+
+// Fetch stats from the survey API
+const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
+const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
+
+let stats = {
+  tokens: { total: 0, used: 0, unused: 0, expired: 0 },
+  responses: { total: 0, completion_rate: 0 },
+};
+
+try {
+  const response = await fetch(`${apiUrl}/api/admin/stats`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (response.ok) {
+    const data = await response.json();
+    stats = data;
+  }
+} catch {
+  // Use default stats on error
+}
+
+export const prerender = false;
+---
+
+<AdminLayout title="Dashboard" currentPage="dashboard">
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-cream rounded-xl border border-stone/30 p-6">
+      <p class="text-sm text-graphite mb-1">Total Tokens</p>
+      <p class="text-3xl font-semibold text-charcoal">{stats.tokens.total}</p>
+    </div>
+    <div class="bg-cream rounded-xl border border-stone/30 p-6">
+      <p class="text-sm text-graphite mb-1">Used</p>
+      <p class="text-3xl font-semibold text-deep-sage">{stats.tokens.used}</p>
+    </div>
+    <div class="bg-cream rounded-xl border border-stone/30 p-6">
+      <p class="text-sm text-graphite mb-1">Pending</p>
+      <p class="text-3xl font-semibold text-taupe">{stats.tokens.unused}</p>
+    </div>
+    <div class="bg-cream rounded-xl border border-stone/30 p-6">
+      <p class="text-sm text-graphite mb-1">Completion Rate</p>
+      <p class="text-3xl font-semibold text-charcoal">
+        {stats.responses.completion_rate || Math.round((stats.tokens.used / stats.tokens.total) * 100) || 0}%
+      </p>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-cream rounded-xl border border-stone/30 p-6 mb-8">
+    <h2 class="text-lg font-semibold text-charcoal mb-4">Quick Actions</h2>
+    <div class="flex flex-wrap gap-4">
+      <a
+        href="/admin/tokens/create"
+        class="inline-flex items-center gap-2 bg-deep-sage text-white px-4 py-2 rounded-lg hover:bg-muted-sage transition-colors"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Create Tokens
+      </a>
+      <a
+        href="/admin/tokens"
+        class="inline-flex items-center gap-2 bg-charcoal text-white px-4 py-2 rounded-lg hover:bg-graphite transition-colors"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        </svg>
+        View All Tokens
+      </a>
+      <a
+        href="/admin/export"
+        class="inline-flex items-center gap-2 border border-stone text-charcoal px-4 py-2 rounded-lg hover:border-deep-sage hover:text-deep-sage transition-colors"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Export Data
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Tokens Preview -->
+  <div class="bg-cream rounded-xl border border-stone/30 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-charcoal">Recent Tokens</h2>
+      <a href="/admin/tokens" class="text-sm text-deep-sage hover:underline">View all &rarr;</a>
+    </div>
+    <p class="text-graphite text-sm">
+      Visit the <a href="/admin/tokens" class="text-deep-sage hover:underline">Tokens page</a> to manage survey access tokens.
+    </p>
+  </div>
+</AdminLayout>
