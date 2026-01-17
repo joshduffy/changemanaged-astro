@@ -225,7 +225,7 @@ Integration doesn't end at Day 100.
 
 ## What This Checklist Doesn't Include
 
-No checklist can replace judgment. This document covers *what* needs to happen. It doesn't tell you:
+No checklist can replace judgment. This document covers _what_ needs to happen. It doesn't tell you:
 
 - **How** to handle the politics of leadership selection
 - **When** to accelerate vs. slow down based on organizational capacity

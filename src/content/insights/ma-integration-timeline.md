@@ -78,4 +78,4 @@ Better approach: be explicit about the target culture. Identify where the two or
 
 ---
 
-*If you're planning an integration—or recovering from one that didn't go as planned—[let's talk](/#contact).*
+_If you're planning an integration—or recovering from one that didn't go as planned—[let's talk](/#contact)._

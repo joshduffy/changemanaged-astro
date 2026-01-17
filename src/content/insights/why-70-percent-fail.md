@@ -26,6 +26,7 @@ Focus is a resource. Spend it deliberately.
 Sponsorship isn't a name on the first slide. It's visible, consistent, and operational.
 
 Real sponsorship looks like:
+
 - Decisions returned within 48 hours, not weeks
 - Leaders showing up to working sessions, not just steering committees
 - Willingness to stop work that isn't delivering
@@ -59,4 +60,4 @@ When everyone sees the same picture, energy goes toward solving problems instead
 
 ---
 
-*If your transformation feels heavy on motion but light on progress, [let's talk](/#contact). We help organizations redirect energy toward outcomes that actually stick.*
+_If your transformation feels heavy on motion but light on progress, [let's talk](/#contact). We help organizations redirect energy toward outcomes that actually stick._

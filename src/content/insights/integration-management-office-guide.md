@@ -29,23 +29,27 @@ That's it. The IMO doesn't do the integration work. The functional teams do. The
 The center of the IMO is a small team of people who do nothing but integration. This typically includes:
 
 **Integration Lead**
+
 - Full-time role for the duration of the integration
 - Reports to a C-level sponsor (often CFO or COO)
 - Has authority to make decisions and break ties
 - Experienced in program management and organizational dynamics
 
 **Integration Program Manager**
+
 - Owns the master plan, timeline, and status reporting
 - Runs the operating rhythm (meetings, reviews, escalations)
 - Tracks issues and risks across all workstreams
 - Usually 1-2 people depending on deal complexity
 
 **Communications Lead**
+
 - Develops all stakeholder messaging
 - Coordinates timing across employee, customer, and external communications
 - Often shared with Corporate Communications
 
 **Finance/Synergy Lead**
+
 - Tracks synergy capture against targets
 - Validates bottom-up synergy estimates
 - Reports to finance leadership but embedded in IMO

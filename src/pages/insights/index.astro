@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 
+export const prerender = true;
+
 const posts = await getCollection('insights');
 
 // Sort by date (newest first) - parse month/year format

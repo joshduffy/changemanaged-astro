@@ -7,19 +7,19 @@
 
 @theme {
   /* Foundation Colors */
-  --color-charcoal: #1A1A1A;
-  --color-cream: #FAFAF8;
-  --color-linen: #F5F1E8;
-  --color-taupe: #8B7355;
-  --color-stone: #C9C5BD;
+  --color-charcoal: #1a1a1a;
+  --color-cream: #fafaf8;
+  --color-linen: #f5f1e8;
+  --color-taupe: #8b7355;
+  --color-stone: #c9c5bd;
   --color-graphite: #666666;
 
   /* Accent Colors - "punctuation, not paragraphs" */
-  --color-deep-sage: #2D5F4F;
-  --color-muted-sage: #5A7C6F;
+  --color-deep-sage: #2d5f4f;
+  --color-muted-sage: #5a7c6f;
 
   /* Font Family */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Base Styles */
@@ -54,7 +54,9 @@ body {
 
 /* Card Hover States */
 .card-hover {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .card-hover:hover {

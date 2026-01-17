@@ -6,6 +6,18 @@ const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
 
 const { id } = Astro.params;
 
+interface ConditionalRule {
+  id: string;
+  sourceQuestionId: number;
+  operator: "equals" | "not_equals" | "includes" | "not_includes" | "is_answered" | "is_not_answered" | "greater_than" | "less_than";
+  value?: string;
+}
+
+interface Conditional {
+  match: "all" | "any";
+  rules: ConditionalRule[];
+}
+
 interface Question {
   id: number;
   section_name: string | null;
@@ -16,6 +28,7 @@ interface Question {
   help_text: string | null;
   required: boolean;
   options: string | null;
+  conditional: Conditional | string | null;
 }
 
 interface Survey {
@@ -88,6 +101,16 @@ export const prerender = false;
             </span>
           </div>
           <div class="flex items-center gap-2">
+            <button
+              id="preview-btn"
+              class="inline-flex items-center gap-2 text-graphite hover:text-charcoal px-4 py-2 rounded-lg border border-stone/30 hover:bg-linen transition-colors text-sm"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Preview
+            </button>
             {survey.status === "draft" && (
               <button
                 id="publish-btn"
@@ -152,15 +175,49 @@ export const prerender = false;
       <div class="bg-cream rounded-xl border border-stone/30 p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-charcoal">Questions</h3>
-          <button
-            id="add-question-btn"
-            class="inline-flex items-center gap-2 text-deep-sage hover:text-muted-sage text-sm font-medium"
-          >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Question
-          </button>
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <button
+                id="template-dropdown-btn"
+                class="inline-flex items-center gap-2 text-graphite hover:text-charcoal text-sm"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+                Insert Template
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div id="template-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-stone/20 z-10">
+                <button type="button" class="template-insert-btn w-full text-left px-4 py-3 hover:bg-linen text-sm" data-template="nps">
+                  <span class="font-medium text-charcoal">NPS</span>
+                  <span class="text-xs text-graphite block">Net Promoter Score · 3 questions</span>
+                </button>
+                <button type="button" class="template-insert-btn w-full text-left px-4 py-3 hover:bg-linen text-sm border-t border-stone/10" data-template="csat">
+                  <span class="font-medium text-charcoal">CSAT</span>
+                  <span class="text-xs text-graphite block">Customer Satisfaction · 6 questions</span>
+                </button>
+                <button type="button" class="template-insert-btn w-full text-left px-4 py-3 hover:bg-linen text-sm border-t border-stone/10" data-template="demographics">
+                  <span class="font-medium text-charcoal">Demographics</span>
+                  <span class="text-xs text-graphite block">Respondent profiling · 5 questions</span>
+                </button>
+                <button type="button" class="template-insert-btn w-full text-left px-4 py-3 hover:bg-linen text-sm border-t border-stone/10" data-template="employee-engagement">
+                  <span class="font-medium text-charcoal">Employee Engagement</span>
+                  <span class="text-xs text-graphite block">Organizational health · 12 questions</span>
+                </button>
+              </div>
+            </div>
+            <button
+              id="add-question-btn"
+              class="inline-flex items-center gap-2 text-deep-sage hover:text-muted-sage text-sm font-medium"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Question
+            </button>
+          </div>
         </div>
 
         <div id="questions-container" class="space-y-3">
@@ -169,6 +226,8 @@ export const prerender = false;
           ) : (
             survey.questions.map((q, index) => {
               const opts = q.options ? (typeof q.options === 'string' ? JSON.parse(q.options) : q.options) : [];
+              const cond = q.conditional ? (typeof q.conditional === 'string' ? JSON.parse(q.conditional) : q.conditional) : null;
+              const hasConditions = cond && cond.rules && cond.rules.length > 0;
               return (
                 <div class="question-card bg-linen rounded-lg p-4 border border-stone/20" data-id={q.id} data-index={index}>
                   <div class="flex items-start gap-4">
@@ -183,6 +242,11 @@ export const prerender = false;
                         <span class="text-sm font-medium text-deep-sage">Q{index + 1}</span>
                         <span class="text-xs bg-white text-graphite px-2 py-0.5 rounded border border-stone/20">{q.question_type}</span>
                         {q.required && <span class="text-xs text-red-500">Required</span>}
+                        {hasConditions && (
+                          <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded" title={`Show when ${cond.match} conditions met`}>
+                            Conditional
+                          </span>
+                        )}
                       </div>
                       <p class="text-charcoal">{q.question_text}</p>
                       {q.help_text && <p class="text-sm text-graphite mt-1">{q.help_text}</p>}
@@ -291,6 +355,50 @@ export const prerender = false;
           ></textarea>
         </div>
 
+        <!-- Conditional Logic Builder -->
+        <div class="border-t border-stone/20 pt-4">
+          <button
+            type="button"
+            id="toggle-conditional-btn"
+            class="flex items-center gap-2 text-sm font-medium text-graphite hover:text-charcoal"
+          >
+            <svg id="conditional-chevron" class="w-4 h-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+            Conditional Logic
+            <span id="conditional-badge" class="hidden text-xs bg-deep-sage text-white px-2 py-0.5 rounded-full">Active</span>
+          </button>
+
+          <div id="conditional-builder" class="hidden mt-4 space-y-3">
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-graphite">Show this question when</span>
+              <select
+                id="conditional-match"
+                class="px-2 py-1 rounded border border-stone/30 text-sm focus:ring-2 focus:ring-deep-sage focus:border-transparent"
+              >
+                <option value="all">all</option>
+                <option value="any">any</option>
+              </select>
+              <span class="text-graphite">of these conditions are met:</span>
+            </div>
+
+            <div id="conditional-rules" class="space-y-2">
+              <!-- Rules will be added here dynamically -->
+            </div>
+
+            <button
+              type="button"
+              id="add-rule-btn"
+              class="inline-flex items-center gap-1 text-sm text-deep-sage hover:text-muted-sage"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Condition
+            </button>
+          </div>
+        </div>
+
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-stone/20">
           <button
             type="button"
@@ -312,6 +420,8 @@ export const prerender = false;
 
   <script is:inline define:vars={{ apiUrl, apiKey, surveyId: id, initialQuestions: survey?.questions || [] }}>
     let questions = [...initialQuestions];
+    let currentConditional = { match: 'all', rules: [] };
+    let currentQuestionIndex = -1; // Index of question being edited (for filtering available questions)
 
     const modal = document.getElementById('question-modal');
     const modalTitle = document.getElementById('modal-title');
@@ -323,6 +433,267 @@ export const prerender = false;
     const questionHelpInput = document.getElementById('question-help');
     const optionsContainer = document.getElementById('options-container');
     const questionOptionsTextarea = document.getElementById('question-options');
+
+    // Conditional logic elements
+    const toggleConditionalBtn = document.getElementById('toggle-conditional-btn');
+    const conditionalChevron = document.getElementById('conditional-chevron');
+    const conditionalBadge = document.getElementById('conditional-badge');
+    const conditionalBuilder = document.getElementById('conditional-builder');
+    const conditionalMatch = document.getElementById('conditional-match');
+    const conditionalRulesContainer = document.getElementById('conditional-rules');
+    const addRuleBtn = document.getElementById('add-rule-btn');
+
+    // Operator labels
+    const operatorLabels = {
+      equals: 'equals',
+      not_equals: 'does not equal',
+      includes: 'contains',
+      not_includes: 'does not contain',
+      is_answered: 'is answered',
+      is_not_answered: 'is not answered',
+      greater_than: 'is greater than',
+      less_than: 'is less than',
+    };
+
+    // Toggle conditional builder visibility
+    toggleConditionalBtn?.addEventListener('click', () => {
+      conditionalBuilder.classList.toggle('hidden');
+      conditionalChevron.classList.toggle('rotate-90');
+    });
+
+    // Add a new condition rule
+    addRuleBtn?.addEventListener('click', () => {
+      addConditionRule();
+    });
+
+    function addConditionRule(rule = null) {
+      const ruleId = rule?.id || 'r' + Date.now();
+      const ruleDiv = document.createElement('div');
+      ruleDiv.className = 'condition-rule flex items-center gap-2 p-2 bg-linen rounded-lg';
+      ruleDiv.dataset.ruleId = ruleId;
+
+      // Get available source questions (only questions before the current one)
+      const availableQuestions = questions.filter((q, idx) => {
+        if (currentQuestionIndex === -1) return true; // New question - show all
+        return idx < currentQuestionIndex;
+      });
+
+      if (availableQuestions.length === 0) {
+        ruleDiv.innerHTML = `
+          <span class="text-sm text-graphite italic">No previous questions available for conditions</span>
+        `;
+        conditionalRulesContainer.appendChild(ruleDiv);
+        return;
+      }
+
+      ruleDiv.innerHTML = `
+        <select class="rule-source flex-shrink-0 px-2 py-1 rounded border border-stone/30 text-sm">
+          <option value="">Select question...</option>
+          ${availableQuestions.map(q => `
+            <option value="${q.id}" ${rule?.sourceQuestionId == q.id ? 'selected' : ''}>
+              Q${questions.indexOf(q) + 1}: ${q.question_text.substring(0, 30)}${q.question_text.length > 30 ? '...' : ''}
+            </option>
+          `).join('')}
+        </select>
+        <select class="rule-operator flex-shrink-0 px-2 py-1 rounded border border-stone/30 text-sm">
+          ${Object.entries(operatorLabels).map(([value, label]) => `
+            <option value="${value}" ${rule?.operator === value ? 'selected' : ''}>${label}</option>
+          `).join('')}
+        </select>
+        <input
+          type="text"
+          class="rule-value flex-1 px-2 py-1 rounded border border-stone/30 text-sm"
+          placeholder="Value"
+          value="${rule?.value || ''}"
+        />
+        <button type="button" class="remove-rule-btn text-red-500 hover:text-red-700 p-1">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      `;
+
+      // Handle operator change (show/hide value field)
+      const operatorSelect = ruleDiv.querySelector('.rule-operator');
+      const valueInput = ruleDiv.querySelector('.rule-value');
+      operatorSelect.addEventListener('change', () => {
+        const noValueOperators = ['is_answered', 'is_not_answered'];
+        valueInput.classList.toggle('hidden', noValueOperators.includes(operatorSelect.value));
+      });
+
+      // Initial value field visibility
+      const noValueOperators = ['is_answered', 'is_not_answered'];
+      valueInput.classList.toggle('hidden', noValueOperators.includes(rule?.operator));
+
+      // Handle remove button
+      ruleDiv.querySelector('.remove-rule-btn').addEventListener('click', () => {
+        ruleDiv.remove();
+        updateConditionalBadge();
+      });
+
+      conditionalRulesContainer.appendChild(ruleDiv);
+      updateConditionalBadge();
+    }
+
+    function updateConditionalBadge() {
+      const ruleCount = conditionalRulesContainer.querySelectorAll('.condition-rule').length;
+      conditionalBadge.classList.toggle('hidden', ruleCount === 0);
+    }
+
+    function collectConditionalData() {
+      const rules = [];
+      conditionalRulesContainer.querySelectorAll('.condition-rule').forEach(ruleDiv => {
+        const sourceSelect = ruleDiv.querySelector('.rule-source');
+        const operatorSelect = ruleDiv.querySelector('.rule-operator');
+        const valueInput = ruleDiv.querySelector('.rule-value');
+
+        if (sourceSelect?.value) {
+          const rule = {
+            id: ruleDiv.dataset.ruleId,
+            sourceQuestionId: parseInt(sourceSelect.value),
+            operator: operatorSelect.value,
+          };
+
+          const noValueOperators = ['is_answered', 'is_not_answered'];
+          if (!noValueOperators.includes(operatorSelect.value)) {
+            rule.value = valueInput.value;
+          }
+
+          rules.push(rule);
+        }
+      });
+
+      if (rules.length === 0) return null;
+
+      return {
+        match: conditionalMatch.value,
+        rules,
+      };
+    }
+
+    function loadConditionalData(conditional) {
+      // Clear existing rules
+      conditionalRulesContainer.innerHTML = '';
+
+      if (!conditional || !conditional.rules || conditional.rules.length === 0) {
+        currentConditional = { match: 'all', rules: [] };
+        conditionalMatch.value = 'all';
+        conditionalBuilder.classList.add('hidden');
+        conditionalChevron.classList.remove('rotate-90');
+        updateConditionalBadge();
+        return;
+      }
+
+      const cond = typeof conditional === 'string' ? JSON.parse(conditional) : conditional;
+      currentConditional = cond;
+      conditionalMatch.value = cond.match || 'all';
+
+      cond.rules.forEach(rule => {
+        addConditionRule(rule);
+      });
+
+      // Show the builder if there are rules
+      conditionalBuilder.classList.remove('hidden');
+      conditionalChevron.classList.add('rotate-90');
+      updateConditionalBadge();
+    }
+
+    function resetConditionalBuilder() {
+      conditionalRulesContainer.innerHTML = '';
+      conditionalMatch.value = 'all';
+      conditionalBuilder.classList.add('hidden');
+      conditionalChevron.classList.remove('rotate-90');
+      updateConditionalBadge();
+    }
+
+    // Templates data
+    const templates = {
+      nps: {
+        questions: [
+          { section_name: "Net Promoter Score", question_type: "scale", question_text: "How likely are you to recommend us to a friend or colleague?", help_text: "0 = Not at all likely, 10 = Extremely likely", required: true, options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"] },
+          { section_name: "Net Promoter Score", question_type: "textarea", question_text: "What is the primary reason for your score?", help_text: "Your feedback helps us improve", required: false },
+          { section_name: "Net Promoter Score", question_type: "textarea", question_text: "What could we do to improve your experience?", required: false }
+        ]
+      },
+      csat: {
+        questions: [
+          { section_name: "Overall Satisfaction", question_type: "scale", question_text: "How satisfied are you with our product/service?", help_text: "1 = Very dissatisfied, 5 = Very satisfied", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Overall Satisfaction", question_type: "radio", question_text: "How well did our product/service meet your expectations?", required: true, options: ["Exceeded expectations", "Met expectations", "Below expectations", "Far below expectations"] },
+          { section_name: "Specific Areas", question_type: "scale", question_text: "How would you rate the quality of our product/service?", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Specific Areas", question_type: "scale", question_text: "How would you rate our customer support?", required: false, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Feedback", question_type: "textarea", question_text: "What did you like most about your experience?", required: false },
+          { section_name: "Feedback", question_type: "textarea", question_text: "What could we improve?", required: false }
+        ]
+      },
+      demographics: {
+        questions: [
+          { section_name: "Demographics", question_type: "dropdown", question_text: "What is your age range?", required: false, options: ["Under 18", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"] },
+          { section_name: "Demographics", question_type: "dropdown", question_text: "What is your gender?", required: false, options: ["Male", "Female", "Non-binary", "Prefer not to say"] },
+          { section_name: "Demographics", question_type: "dropdown", question_text: "What is your current employment status?", required: false, options: ["Employed full-time", "Employed part-time", "Self-employed", "Unemployed", "Student", "Retired", "Other"] },
+          { section_name: "Demographics", question_type: "dropdown", question_text: "What is your highest level of education?", required: false, options: ["High school or equivalent", "Some college", "Associate degree", "Bachelor's degree", "Master's degree", "Doctoral degree", "Professional degree"] },
+          { section_name: "Demographics", question_type: "dropdown", question_text: "What is your annual household income?", required: false, options: ["Under $25,000", "$25,000 - $49,999", "$50,000 - $74,999", "$75,000 - $99,999", "$100,000 - $149,999", "$150,000 - $199,999", "$200,000+"] }
+        ]
+      },
+      "employee-engagement": {
+        questions: [
+          { section_name: "Job Satisfaction", question_type: "scale", question_text: "I am satisfied with my job overall", help_text: "1 = Strongly Disagree, 5 = Strongly Agree", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Job Satisfaction", question_type: "scale", question_text: "I feel my work is meaningful and contributes to the organization", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Job Satisfaction", question_type: "scale", question_text: "I have the resources and tools I need to do my job effectively", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Leadership & Management", question_type: "scale", question_text: "My manager provides clear direction and expectations", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Leadership & Management", question_type: "scale", question_text: "I receive regular feedback on my performance", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Leadership & Management", question_type: "scale", question_text: "Leadership communicates a clear vision for the future", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Growth & Development", question_type: "scale", question_text: "I have opportunities to learn and grow in my role", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Growth & Development", question_type: "scale", question_text: "I see a clear path for career advancement", required: false, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Team & Culture", question_type: "scale", question_text: "I feel valued and respected by my colleagues", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Team & Culture", question_type: "scale", question_text: "There is good collaboration within my team", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Open Feedback", question_type: "textarea", question_text: "What do you value most about working here?", required: false },
+          { section_name: "Open Feedback", question_type: "textarea", question_text: "What one thing would you change to improve your experience?", required: false }
+        ]
+      }
+    };
+
+    // Template dropdown toggle
+    const templateDropdownBtn = document.getElementById('template-dropdown-btn');
+    const templateDropdown = document.getElementById('template-dropdown');
+
+    templateDropdownBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      templateDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      templateDropdown?.classList.add('hidden');
+    });
+
+    // Template insert handlers
+    document.querySelectorAll('.template-insert-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const templateId = btn.dataset.template;
+        const template = templates[templateId];
+        if (!template) return;
+
+        if (!confirm(`Add ${template.questions.length} questions from this template?`)) return;
+
+        templateDropdown.classList.add('hidden');
+
+        try {
+          const response = await fetch(`${apiUrl}/api/surveys/${surveyId}/questions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({ questions: template.questions }),
+          });
+
+          if (!response.ok) throw new Error('Failed to add template questions');
+
+          window.location.reload();
+        } catch (error) {
+          alert('Failed to add template: ' + error.message);
+        }
+      });
+    });
 
     // Show/hide options based on type
     questionTypeSelect?.addEventListener('change', () => {
@@ -340,6 +711,8 @@ export const prerender = false;
       questionHelpInput.value = '';
       questionOptionsTextarea.value = '';
       optionsContainer.classList.add('hidden');
+      currentQuestionIndex = questions.length; // New question will be at the end
+      resetConditionalBuilder();
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     });
@@ -348,7 +721,8 @@ export const prerender = false;
     document.querySelectorAll('.edit-question-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
-        const q = questions.find(q => q.id == id);
+        const qIndex = questions.findIndex(q => q.id == id);
+        const q = questions[qIndex];
         if (!q) return;
 
         modalTitle.textContent = 'Edit Question';
@@ -363,6 +737,10 @@ export const prerender = false;
 
         const needsOptions = ['radio', 'checkbox', 'dropdown', 'scale'].includes(q.question_type);
         optionsContainer.classList.toggle('hidden', !needsOptions);
+
+        // Load conditional data
+        currentQuestionIndex = qIndex;
+        loadConditionalData(q.conditional);
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -394,20 +772,48 @@ export const prerender = false;
         options: ['radio', 'checkbox', 'dropdown', 'scale'].includes(questionTypeSelect.value)
           ? questionOptionsTextarea.value.split('\n').filter(o => o.trim())
           : null,
+        conditional: collectConditionalData(),
       };
 
       try {
-        // Add or update question via API
-        const response = await fetch(`${apiUrl}/api/surveys/${surveyId}/questions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({ questions: [questionData] }),
-        });
+        const editingQuestionId = questionIdInput.value;
 
-        if (!response.ok) throw new Error('Failed to save question');
+        if (editingQuestionId) {
+          // Editing existing question - update all questions with modified one
+          const updatedQuestions = questions.map(q => {
+            if (q.id == editingQuestionId) {
+              return {
+                ...q,
+                ...questionData,
+                id: q.id, // Preserve ID for reference (will be regenerated on save)
+              };
+            }
+            return q;
+          });
+
+          const response = await fetch(`${apiUrl}/api/surveys/${surveyId}/questions`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({ questions: updatedQuestions }),
+          });
+
+          if (!response.ok) throw new Error('Failed to update question');
+        } else {
+          // Adding new question
+          const response = await fetch(`${apiUrl}/api/surveys/${surveyId}/questions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({ questions: [questionData] }),
+          });
+
+          if (!response.ok) throw new Error('Failed to save question');
+        }
 
         // Reload page to show updated questions
         window.location.reload();
@@ -521,5 +927,63 @@ export const prerender = false;
         alert('Failed to delete: ' + error.message);
       }
     });
+
+    // Preview survey
+    const previewModal = document.getElementById('preview-modal');
+    const previewIframe = document.getElementById('preview-iframe');
+
+    document.getElementById('preview-btn')?.addEventListener('click', () => {
+      // Get current survey data from the form
+      const surveyData = {
+        name: document.getElementById('survey-name').value,
+        description: document.getElementById('survey-description').value,
+      };
+
+      previewModal.classList.remove('hidden');
+      previewModal.classList.add('flex');
+
+      // Load preview page in iframe
+      previewIframe.src = `${apiUrl}/survey/preview?preview=true`;
+
+      // Wait for iframe to load then send data
+      previewIframe.onload = () => {
+        previewIframe.contentWindow.postMessage({
+          type: 'preview-survey',
+          survey: surveyData,
+          questions: questions,
+        }, '*');
+      };
+    });
+
+    document.getElementById('close-preview-btn')?.addEventListener('click', () => {
+      previewModal.classList.add('hidden');
+      previewModal.classList.remove('flex');
+      previewIframe.src = '';
+    });
+
+    previewModal?.addEventListener('click', (e) => {
+      if (e.target === previewModal) {
+        previewModal.classList.add('hidden');
+        previewModal.classList.remove('flex');
+        previewIframe.src = '';
+      }
+    });
   </script>
+
+  <!-- Preview Modal -->
+  <div id="preview-modal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl w-full max-w-4xl h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between p-4 border-b border-stone/20">
+        <h3 class="text-lg font-semibold text-charcoal">Survey Preview</h3>
+        <button id="close-preview-btn" class="text-graphite hover:text-charcoal">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex-1 overflow-hidden">
+        <iframe id="preview-iframe" class="w-full h-full border-0"></iframe>
+      </div>
+    </div>
+  </div>
 </AdminLayout>

@@ -121,13 +121,34 @@ export const prerender = false;
                       >
                         Edit
                       </a>
+                      <button
+                        type="button"
+                        data-duplicate-id={survey.id}
+                        class="text-deep-sage hover:text-muted-sage text-sm font-medium duplicate-btn"
+                      >
+                        Duplicate
+                      </button>
                       {survey.status === "active" && (
-                        <a
-                          href={`/admin/surveys/${survey.id}/tokens`}
-                          class="text-deep-sage hover:text-muted-sage text-sm font-medium"
-                        >
-                          Tokens
-                        </a>
+                        <>
+                          <a
+                            href={`/admin/surveys/${survey.id}/tokens`}
+                            class="text-deep-sage hover:text-muted-sage text-sm font-medium"
+                          >
+                            Tokens
+                          </a>
+                          <a
+                            href={`/admin/surveys/${survey.id}/responses`}
+                            class="text-deep-sage hover:text-muted-sage text-sm font-medium"
+                          >
+                            Responses
+                          </a>
+                          <a
+                            href={`/admin/surveys/${survey.id}/analytics`}
+                            class="text-deep-sage hover:text-muted-sage text-sm font-medium"
+                          >
+                            Analytics
+                          </a>
+                        </>
                       )}
                     </div>
                   </td>
@@ -158,3 +179,39 @@ export const prerender = false;
     </a>
   </div>
 </AdminLayout>
+
+<script define:vars={{ apiUrl, apiKey }}>
+  document.querySelectorAll('.duplicate-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const surveyId = e.target.dataset.duplicateId;
+      const originalText = e.target.textContent;
+
+      if (!confirm('Create a copy of this survey?')) return;
+
+      e.target.textContent = 'Duplicating...';
+      e.target.disabled = true;
+
+      try {
+        const response = await fetch(`${apiUrl}/api/surveys/${surveyId}?action=duplicate`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${apiKey}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Redirect to the new survey's edit page
+          window.location.href = `/admin/surveys/${data.survey.id}`;
+        } else {
+          const error = await response.json();
+          alert(`Failed to duplicate: ${error.error || 'Unknown error'}`);
+          e.target.textContent = originalText;
+          e.target.disabled = false;
+        }
+      } catch (err) {
+        alert('Failed to duplicate survey');
+        e.target.textContent = originalText;
+        e.target.disabled = false;
+      }
+    });
+  });
+</script>

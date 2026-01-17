@@ -2,7 +2,10 @@
 import AdminLayout from "../../../components/admin/AdminLayout.astro";
 
 const apiUrl = import.meta.env.SURVEY_API_URL || "https://survey.changemanaged.io";
-const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY;
+const apiKey = import.meta.env.SURVEY_ADMIN_API_KEY || "";
+
+// Bug #4: Warn if API key not configured
+const apiKeyMissing = !apiKey || apiKey === "your_admin_api_key_here";
 
 export const prerender = false;
 ---
@@ -16,6 +19,20 @@ export const prerender = false;
       </svg>
       Back to Surveys
     </a>
+
+    {apiKeyMissing && (
+      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+        <div class="flex items-center gap-2 text-yellow-800">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span class="font-medium">API Key Not Configured</span>
+        </div>
+        <p class="text-sm text-yellow-700 mt-1">
+          AI survey generation requires SURVEY_ADMIN_API_KEY in your environment variables. Templates still work.
+        </p>
+      </div>
+    )}
 
     <!-- AI Generation Section -->
     <div id="generation-section" class="bg-cream rounded-xl border border-stone/30 p-6 mb-6">
@@ -107,12 +124,60 @@ export const prerender = false;
       </form>
     </div>
 
+    <!-- Quick Start Templates -->
+    <div class="bg-cream rounded-xl border border-stone/30 p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="font-semibold text-charcoal">Quick Start Templates</h3>
+          <p class="text-sm text-graphite">Start with a pre-built template or add one to your generated survey</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <button type="button" class="template-btn text-left p-4 rounded-lg border border-stone/20 hover:border-deep-sage hover:bg-linen/50 transition-colors" data-template="nps">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">📊</span>
+            <span class="font-medium text-charcoal">NPS</span>
+          </div>
+          <p class="text-xs text-graphite">Net Promoter Score with follow-up</p>
+          <span class="text-xs text-deep-sage mt-2 inline-block">3 questions</span>
+        </button>
+
+        <button type="button" class="template-btn text-left p-4 rounded-lg border border-stone/20 hover:border-deep-sage hover:bg-linen/50 transition-colors" data-template="csat">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">⭐</span>
+            <span class="font-medium text-charcoal">CSAT</span>
+          </div>
+          <p class="text-xs text-graphite">Customer Satisfaction survey</p>
+          <span class="text-xs text-deep-sage mt-2 inline-block">6 questions</span>
+        </button>
+
+        <button type="button" class="template-btn text-left p-4 rounded-lg border border-stone/20 hover:border-deep-sage hover:bg-linen/50 transition-colors" data-template="demographics">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">👥</span>
+            <span class="font-medium text-charcoal">Demographics</span>
+          </div>
+          <p class="text-xs text-graphite">Standard respondent profiling</p>
+          <span class="text-xs text-deep-sage mt-2 inline-block">5 questions</span>
+        </button>
+
+        <button type="button" class="template-btn text-left p-4 rounded-lg border border-stone/20 hover:border-deep-sage hover:bg-linen/50 transition-colors" data-template="employee-engagement">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">🏢</span>
+            <span class="font-medium text-charcoal">Engagement</span>
+          </div>
+          <p class="text-xs text-graphite">Employee engagement survey</p>
+          <span class="text-xs text-deep-sage mt-2 inline-block">12 questions</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Loading State -->
     <div id="loading-section" class="hidden bg-cream rounded-xl border border-stone/30 p-8 mb-6">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="w-12 h-12 border-4 border-deep-sage/20 border-t-deep-sage rounded-full animate-spin mb-4"></div>
         <h3 class="text-lg font-medium text-charcoal mb-2">Generating your survey...</h3>
-        <p class="text-sm text-graphite">DeepSeek R1 is crafting professional questions based on your description</p>
+        <p class="text-sm text-graphite">AI is crafting professional questions based on your description</p>
       </div>
     </div>
 
@@ -242,6 +307,143 @@ export const prerender = false;
     let generatedSurvey = null;
     let questions = [];
 
+    // Embedded templates
+    const templates = {
+      nps: {
+        name: "Net Promoter Score (NPS)",
+        description: "Standard NPS survey with follow-up questions",
+        questions: [
+          {
+            section_name: "Net Promoter Score",
+            question_type: "scale",
+            question_text: "How likely are you to recommend us to a friend or colleague?",
+            help_text: "0 = Not at all likely, 10 = Extremely likely",
+            required: true,
+            options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+          },
+          {
+            section_name: "Net Promoter Score",
+            question_type: "textarea",
+            question_text: "What is the primary reason for your score?",
+            help_text: "Your feedback helps us improve",
+            required: false
+          },
+          {
+            section_name: "Net Promoter Score",
+            question_type: "textarea",
+            question_text: "What could we do to improve your experience?",
+            required: false
+          }
+        ]
+      },
+      csat: {
+        name: "Customer Satisfaction (CSAT)",
+        description: "Customer satisfaction survey with detailed feedback",
+        questions: [
+          {
+            section_name: "Overall Satisfaction",
+            question_type: "scale",
+            question_text: "How satisfied are you with our product/service?",
+            help_text: "1 = Very dissatisfied, 5 = Very satisfied",
+            required: true,
+            options: ["1", "2", "3", "4", "5"]
+          },
+          {
+            section_name: "Overall Satisfaction",
+            question_type: "radio",
+            question_text: "How well did our product/service meet your expectations?",
+            required: true,
+            options: ["Exceeded expectations", "Met expectations", "Below expectations", "Far below expectations"]
+          },
+          {
+            section_name: "Specific Areas",
+            question_type: "scale",
+            question_text: "How would you rate the quality of our product/service?",
+            required: true,
+            options: ["1", "2", "3", "4", "5"]
+          },
+          {
+            section_name: "Specific Areas",
+            question_type: "scale",
+            question_text: "How would you rate our customer support?",
+            required: false,
+            options: ["1", "2", "3", "4", "5"]
+          },
+          {
+            section_name: "Feedback",
+            question_type: "textarea",
+            question_text: "What did you like most about your experience?",
+            required: false
+          },
+          {
+            section_name: "Feedback",
+            question_type: "textarea",
+            question_text: "What could we improve?",
+            required: false
+          }
+        ]
+      },
+      demographics: {
+        name: "Demographics",
+        description: "Standard demographic questions for respondent profiling",
+        questions: [
+          {
+            section_name: "Demographics",
+            question_type: "dropdown",
+            question_text: "What is your age range?",
+            required: false,
+            options: ["Under 18", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"]
+          },
+          {
+            section_name: "Demographics",
+            question_type: "dropdown",
+            question_text: "What is your gender?",
+            required: false,
+            options: ["Male", "Female", "Non-binary", "Prefer not to say"]
+          },
+          {
+            section_name: "Demographics",
+            question_type: "dropdown",
+            question_text: "What is your current employment status?",
+            required: false,
+            options: ["Employed full-time", "Employed part-time", "Self-employed", "Unemployed", "Student", "Retired", "Other"]
+          },
+          {
+            section_name: "Demographics",
+            question_type: "dropdown",
+            question_text: "What is your highest level of education?",
+            required: false,
+            options: ["High school or equivalent", "Some college", "Associate degree", "Bachelor's degree", "Master's degree", "Doctoral degree", "Professional degree"]
+          },
+          {
+            section_name: "Demographics",
+            question_type: "dropdown",
+            question_text: "What is your annual household income?",
+            required: false,
+            options: ["Under $25,000", "$25,000 - $49,999", "$50,000 - $74,999", "$75,000 - $99,999", "$100,000 - $149,999", "$150,000 - $199,999", "$200,000+"]
+          }
+        ]
+      },
+      "employee-engagement": {
+        name: "Employee Engagement",
+        description: "Core employee engagement questions for organizational health",
+        questions: [
+          { section_name: "Job Satisfaction", question_type: "scale", question_text: "I am satisfied with my job overall", help_text: "1 = Strongly Disagree, 5 = Strongly Agree", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Job Satisfaction", question_type: "scale", question_text: "I feel my work is meaningful and contributes to the organization", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Job Satisfaction", question_type: "scale", question_text: "I have the resources and tools I need to do my job effectively", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Leadership & Management", question_type: "scale", question_text: "My manager provides clear direction and expectations", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Leadership & Management", question_type: "scale", question_text: "I receive regular feedback on my performance", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Leadership & Management", question_type: "scale", question_text: "Leadership communicates a clear vision for the future", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Growth & Development", question_type: "scale", question_text: "I have opportunities to learn and grow in my role", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Growth & Development", question_type: "scale", question_text: "I see a clear path for career advancement", required: false, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Team & Culture", question_type: "scale", question_text: "I feel valued and respected by my colleagues", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Team & Culture", question_type: "scale", question_text: "There is good collaboration within my team", required: true, options: ["1", "2", "3", "4", "5"] },
+          { section_name: "Open Feedback", question_type: "textarea", question_text: "What do you value most about working here?", required: false },
+          { section_name: "Open Feedback", question_type: "textarea", question_text: "What one thing would you change to improve your experience?", required: false }
+        ]
+      }
+    };
+
     const elements = {
       generationSection: document.getElementById('generation-section'),
       loadingSection: document.getElementById('loading-section'),
@@ -306,13 +508,21 @@ export const prerender = false;
         }
 
         const data = await response.json();
+
+        // Bug #3: Validate response structure
+        if (!data.survey || !data.db_format?.questions) {
+          throw new Error('Invalid response format from API');
+        }
+
         generatedSurvey = data.survey;
         questions = data.db_format.questions;
 
         // Populate preview
         elements.surveyTitle.value = data.survey.title;
         elements.surveyDescription.value = data.survey.description || '';
-        elements.costBadge.textContent = `Cost: $${data.meta.estimated_cost_usd.toFixed(4)}`;
+        // Bug #5: Null check for cost
+        const cost = data.meta?.estimated_cost_usd ?? 0;
+        elements.costBadge.textContent = `Cost: $${cost.toFixed(4)}`;
 
         renderQuestions();
         showSection('preview');
@@ -348,14 +558,22 @@ export const prerender = false;
 
         if (q.options && ['radio', 'checkbox', 'dropdown', 'scale'].includes(q.question_type)) {
           const optionsEl = card.querySelector('.question-options');
-          const opts = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
+          // Bug #1: Safe JSON parsing
+          let opts;
+          try {
+            opts = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
+          } catch (e) {
+            console.error('Failed to parse options:', e);
+            opts = [];
+          }
           optionsEl.innerHTML = opts.map(o => `<span class="inline-block text-xs bg-stone/20 text-graphite px-2 py-1 rounded mr-1 mb-1">${o}</span>`).join('');
           optionsEl.classList.remove('hidden');
         }
 
-        // Delete handler
-        card.querySelector('.delete-btn').addEventListener('click', () => {
-          questions.splice(index, 1);
+        // Bug #2: Delete handler using data attribute instead of closure
+        card.querySelector('.delete-btn').addEventListener('click', (e) => {
+          const idx = parseInt(e.currentTarget.closest('.question-card').dataset.index);
+          questions.splice(idx, 1);
           renderQuestions();
         });
 
@@ -370,6 +588,16 @@ export const prerender = false;
       const originalText = btn.textContent;
       btn.textContent = 'Saving...';
       btn.disabled = true;
+
+      // Bug #9: Disable all interactive elements during save
+      const disableAll = (disabled) => {
+        elements.saveDraftBtn.disabled = disabled;
+        elements.savePublishBtn.disabled = disabled;
+        elements.regenerateBtn.disabled = disabled;
+        elements.generateBtn.disabled = disabled;
+        document.querySelectorAll('.template-btn').forEach(b => b.disabled = disabled);
+      };
+      disableAll(true);
 
       try {
         const response = await fetch(`${apiUrl}/api/surveys`, {
@@ -391,9 +619,9 @@ export const prerender = false;
 
         const data = await response.json();
 
-        // If publishing, update status
+        // Bug #6: Error handling for publish status update
         if (status === 'active') {
-          await fetch(`${apiUrl}/api/surveys/${data.survey.id}`, {
+          const publishResponse = await fetch(`${apiUrl}/api/surveys/${data.survey.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -401,6 +629,10 @@ export const prerender = false;
             },
             body: JSON.stringify({ status: 'active' }),
           });
+
+          if (!publishResponse.ok) {
+            throw new Error('Survey saved but failed to publish. Check the surveys list.');
+          }
         }
 
         // Redirect to survey list or edit page
@@ -409,8 +641,9 @@ export const prerender = false;
       } catch (error) {
         console.error('Save error:', error);
         alert('Failed to save survey: ' + error.message);
+        // Bug #8: Reset all button states
         btn.textContent = originalText;
-        btn.disabled = false;
+        disableAll(false);
       }
     }
 
@@ -430,5 +663,30 @@ export const prerender = false;
 
     elements.saveDraftBtn.addEventListener('click', () => saveSurvey('draft'));
     elements.savePublishBtn.addEventListener('click', () => saveSurvey('active'));
+
+    // Template handlers
+    document.querySelectorAll('.template-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const templateId = btn.dataset.template;
+        const template = templates[templateId];
+        if (!template) return;
+
+        if (questions.length > 0) {
+          // Append to existing questions
+          if (confirm(`Add ${template.questions.length} questions from "${template.name}" to your survey?`)) {
+            questions = [...questions, ...template.questions];
+            renderQuestions();
+          }
+        } else {
+          // Start new survey with template
+          questions = [...template.questions];
+          elements.surveyTitle.value = template.name;
+          elements.surveyDescription.value = template.description;
+          elements.costBadge.textContent = 'Template';
+          renderQuestions();
+          showSection('preview');
+        }
+      });
+    });
   </script>
 </AdminLayout>

@@ -10,11 +10,17 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/vercel": "^9.0.3",
+    "@clerk/astro": "^2.16.12",
     "@google-analytics/data": "^5.2.1",
+    "@supabase/supabase-js": "^2.90.1",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.17",
     "astro": "^5.16.4",
     "googleapis": "^168.0.0",
     "tailwindcss": "^4.1.17"
+  },
+  "devDependencies": {
+    "@google-analytics/admin": "^9.0.1"
   }
 }

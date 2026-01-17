@@ -97,27 +97,27 @@ Full article: [link to article]
 
 ### High Priority (Submit This Week)
 
-| Directory | URL | Notes |
-|-----------|-----|-------|
-| Clutch.co | https://clutch.co/profile | Free tier available, strong B2B visibility |
-| GoodFirms | https://www.goodfirms.co/add-your-firm | Free listing for consultants |
-| Consulting.us | https://www.consulting.us/submit-your-firm | Industry-specific directory |
+| Directory     | URL                                        | Notes                                      |
+| ------------- | ------------------------------------------ | ------------------------------------------ |
+| Clutch.co     | https://clutch.co/profile                  | Free tier available, strong B2B visibility |
+| GoodFirms     | https://www.goodfirms.co/add-your-firm     | Free listing for consultants               |
+| Consulting.us | https://www.consulting.us/submit-your-firm | Industry-specific directory                |
 
 ### Medium Priority (Submit This Month)
 
-| Directory | URL | Notes |
-|-----------|-----|-------|
-| Expertise.com | https://www.expertise.com/for-business | Location-based consulting directory |
-| G2 | https://sell.g2.com/ | More tech-focused but has consulting category |
-| The Manifest | https://themanifest.com/join | Sister site to Clutch |
+| Directory     | URL                                    | Notes                                         |
+| ------------- | -------------------------------------- | --------------------------------------------- |
+| Expertise.com | https://www.expertise.com/for-business | Location-based consulting directory           |
+| G2            | https://sell.g2.com/                   | More tech-focused but has consulting category |
+| The Manifest  | https://themanifest.com/join           | Sister site to Clutch                         |
 
 ### Industry-Specific
 
-| Directory | URL | Notes |
-|-----------|-----|-------|
-| Association of Change Management Professionals | https://www.acmpglobal.org/ | Membership + directory |
-| M&A Leadership Council | https://www.malc.com/ | Premium but high-quality network |
-| Prosci Partner Network | https://www.prosci.com/ | If eligible as certified practitioner |
+| Directory                                      | URL                         | Notes                                 |
+| ---------------------------------------------- | --------------------------- | ------------------------------------- |
+| Association of Change Management Professionals | https://www.acmpglobal.org/ | Membership + directory                |
+| M&A Leadership Council                         | https://www.malc.com/       | Premium but high-quality network      |
+| Prosci Partner Network                         | https://www.prosci.com/     | If eligible as certified practitioner |
 
 ---
 
@@ -154,29 +154,29 @@ Thanks for considering,
 
 ### Tier 1 (High Authority)
 
-| Publication | Focus | Contact |
-|-------------|-------|---------|
-| Harvard Business Review | Management/strategy | hbr.org/guidelines-for-authors |
-| MIT Sloan Management Review | Research-backed management | sloanreview.mit.edu/write-for-us |
-| McKinsey Quarterly | Strategy/transformation | Submit via McKinsey Alumni network |
+| Publication                 | Focus                      | Contact                            |
+| --------------------------- | -------------------------- | ---------------------------------- |
+| Harvard Business Review     | Management/strategy        | hbr.org/guidelines-for-authors     |
+| MIT Sloan Management Review | Research-backed management | sloanreview.mit.edu/write-for-us   |
+| McKinsey Quarterly          | Strategy/transformation    | Submit via McKinsey Alumni network |
 
 ### Tier 2 (Industry-Specific)
 
-| Publication | Focus | Contact |
-|-------------|-------|---------|
-| HR Executive | HR/people strategies | hrexecutive.com/contribute |
-| SHRM | HR professional audience | shrm.org/hr-today |
-| Chief Executive | C-suite perspective | chiefexecutive.net/submit |
-| CFO.com | Finance leadership | cfo.com/contact |
+| Publication     | Focus                    | Contact                    |
+| --------------- | ------------------------ | -------------------------- |
+| HR Executive    | HR/people strategies     | hrexecutive.com/contribute |
+| SHRM            | HR professional audience | shrm.org/hr-today          |
+| Chief Executive | C-suite perspective      | chiefexecutive.net/submit  |
+| CFO.com         | Finance leadership       | cfo.com/contact            |
 
 ### Tier 3 (Good for Backlinks)
 
-| Publication | Focus | Contact |
-|-------------|-------|---------|
-| Forbes Coaches Council | Leadership/consulting | forbescoachescouncil.com |
-| Fast Company | Business innovation | fastcompany.com/contribute |
-| Inc. | Entrepreneurship/business | inc.com/contribute |
-| Entrepreneur | Business/startups | entrepreneur.com/contribute |
+| Publication            | Focus                     | Contact                     |
+| ---------------------- | ------------------------- | --------------------------- |
+| Forbes Coaches Council | Leadership/consulting     | forbescoachescouncil.com    |
+| Fast Company           | Business innovation       | fastcompany.com/contribute  |
+| Inc.                   | Entrepreneurship/business | inc.com/contribute          |
+| Entrepreneur           | Business/startups         | entrepreneur.com/contribute |
 
 ---
 
